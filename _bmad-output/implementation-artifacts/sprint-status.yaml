@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-07-26T16:01:00+07:00
-last_updated: 2026-07-26T17:25:00+07:00
+last_updated: 2026-07-26T18:10:00+07:00
 project: snake-rougelike
 project_key: NOKEY
 tracking_system: file-system
@@ -64,14 +64,14 @@ development_status:
   2-8-teak-defense-tank-species: done
   2-9-dissatisfaction-tease-pre-flee-indicator: done
   epic-2-retrospective: optional
-  epic-3: in-progress
+  epic-3: done
   3-1-dissatisfactionsystem-and-multi-cause-tracking: done
   3-2-dissatisfaction-indicators-in-combat-hud: done
   3-3-flee-threshold-and-hr-modifier-hook: done
   3-4-flee-sequence-pattern-tier-0-usp: done
   3-5-depleted-tile-state-after-flee: done
   3-6-weather-stub-single-weather-type: done
-  3-7-mass-flee-feedback-and-warning-chirp: backlog
+  3-7-mass-flee-feedback-and-warning-chirp: done
   epic-3-retrospective: optional
   epic-4: backlog
   4-1-apepool-and-pathfindingservice: backlog

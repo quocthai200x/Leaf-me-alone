@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://run_root_scene"]
+[gd_scene load_steps=17 format=3 uid="uid://run_root_scene"]
 
 [ext_resource type="Script" path="res://scenes/run/run_root.gd" id="1_run_root"]
 [ext_resource type="PackedScene" uid="uid://pause_panel_shell" path="res://scenes/run/pause_panel.tscn" id="2_pause"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://scripts/systems/dissatisfaction_system.gd" id="13_dissat"]
 [ext_resource type="Script" path="res://scripts/systems/flee_sequence_system.gd" id="14_flee"]
 [ext_resource type="Script" path="res://scripts/systems/pathfinding_service.gd" id="15_path"]
+[ext_resource type="Script" path="res://scripts/systems/flee_feedback_system.gd" id="16_flee_feedback"]
 
 [node name="RunRoot" type="Node2D"]
 script = ExtResource("1_run_root")
@@ -38,6 +39,11 @@ script = ExtResource("13_dissat")
 script = ExtResource("14_flee")
 
 [node name="WhooshPlayer" type="AudioStreamPlayer" parent="FleeSequenceSystem"]
+
+[node name="FleeFeedbackSystem" type="Node" parent="."]
+script = ExtResource("16_flee_feedback")
+
+[node name="WarningChirpPlayer" type="AudioStreamPlayer" parent="FleeFeedbackSystem"]
 
 [node name="PathfindingService" type="Node" parent="."]
 script = ExtResource("15_path")

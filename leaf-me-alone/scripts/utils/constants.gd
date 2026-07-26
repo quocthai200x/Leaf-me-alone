@@ -31,6 +31,13 @@ const FLEE_RUN_PHASE_SEC := 0.45
 const DEBUG_FLEE_ANGRY_PHASE_SEC := 0.05
 const DEBUG_FLEE_RUN_PHASE_SEC := 0.05
 const FLEE_WHOOSH_BUS := &"SFX"
+const COMBAT_AUDIO_BUS := &"Combat"
+
+# Mass flee feedback (Story 3.7)
+const MASS_FLEE_MIN_COUNT := 2
+const FLEE_VIGNETTE_DURATION_SEC := 0.2
+const RESIGNATION_TOAST_DURATION_SEC := 2.5
+const FLEE_COLOR := Color(1.0, 0.278431, 0.341176, 1.0)
 
 # DESIGN.md dissatisfaction token #FF8C42 (UX-DR18)
 const DISSATISFACTION_COLOR := Color(1.0, 0.54902, 0.258824, 0.95)
