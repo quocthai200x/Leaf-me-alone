@@ -19,6 +19,9 @@ const DISSATISFACTION_WEATHER_MISMATCH_DELTA := 10
 const DISSATISFACTION_COMBAT_TICK_SEC := 30.0
 const DEBUG_DISSATISFACTION_COMBAT_TICK_SEC := 1.0
 
+# DESIGN.md dissatisfaction token #FF8C42 (UX-DR18)
+const DISSATISFACTION_COLOR := Color(1.0, 0.54902, 0.258824, 0.95)
+
 const DEFAULT_RUN_WEATHER := "tropical_sun"
 const WEATHER_OPTIONS: Array[String] = ["tropical_sun", "tropical_rain"]
 

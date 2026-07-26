@@ -38,6 +38,11 @@ func sync_dissatisfaction_indicators(grid: GridDataRes) -> void:
 		_grid_renderer.sync_dissatisfaction_indicators(grid)
 
 
+func set_combat_phase(active: bool) -> void:
+	if _grid_renderer.has_method("set_combat_phase"):
+		_grid_renderer.set_combat_phase(active)
+
+
 func set_visible_map_size(size: Vector2) -> void:
 	_visible_size = size
 	_update_pan_state()

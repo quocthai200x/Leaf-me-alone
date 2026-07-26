@@ -152,6 +152,10 @@ func _apply_phase_ui(state: int) -> void:
 	_map_dim_overlay.visible = is_pause
 	_pause_panel.visible = is_pause
 	_combat_hud.visible = is_combat
+	if _map_view.has_method("set_combat_phase"):
+		_map_view.set_combat_phase(is_combat)
+	if RunManager.grid_data != null and _map_view.has_method("sync_dissatisfaction_indicators"):
+		_map_view.sync_dissatisfaction_indicators(RunManager.grid_data)
 
 	var map_width := PAUSE_VISIBLE_MAP_WIDTH if is_pause else COMBAT_VISIBLE_MAP_WIDTH
 	if _map_view.has_method("set_visible_map_size"):

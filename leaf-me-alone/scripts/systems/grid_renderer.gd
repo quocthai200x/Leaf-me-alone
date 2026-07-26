@@ -7,16 +7,24 @@ const SoilTypeRes := preload("res://scripts/data/soil_type.gd")
 const DissatisfactionIndicatorSystemRes := preload(
 	"res://scripts/systems/dissatisfaction_indicator_system.gd"
 )
+const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 
 @onready var _tile_map: TileMapLayer = $TileMapLayer
 @onready var _plant_map: TileMapLayer = $PlantMapLayer
 @onready var _indicators: Node2D = $Indicators
 
 var _grid: GridDataRes
+var _in_combat: bool = false
 
 
 func _ready() -> void:
 	_build_greybox_tileset()
+	if _indicators != null:
+		_indicators.z_index = 10
+
+
+func set_combat_phase(active: bool) -> void:
+	_in_combat = active
 
 
 func sync_from_grid_data(grid: GridDataRes) -> void:
@@ -48,7 +56,7 @@ func _sync_dissatisfaction_indicators(grid: GridDataRes) -> void:
 			if not grid.has_plant(pos):
 				continue
 			var dissat := grid.get_plant_dissatisfaction(pos)
-			var state := DissatisfactionIndicatorSystemRes.get_tease_state(dissat)
+			var state := DissatisfactionIndicatorSystemRes.get_indicator_state(dissat, _in_combat)
 			if not bool(state.get("show_emoji", false)):
 				continue
 			_create_indicator(pos, state)
@@ -77,7 +85,7 @@ func _create_indicator(cell: Vector2i, state: Dictionary) -> void:
 		root.add_child(meter_bg)
 
 		var meter_fill := ColorRect.new()
-		meter_fill.color = Color(0.95, 0.55, 0.15, 0.95)
+		meter_fill.color = state.get("meter_color", GameConstantsRes.DISSATISFACTION_COLOR)
 		var fill_w := (TILE_SIZE - 2) * float(state.get("meter_fill", 0.0))
 		meter_fill.size = Vector2(fill_w, 3)
 		meter_fill.position = meter_bg.position
