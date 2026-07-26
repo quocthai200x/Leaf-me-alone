@@ -1,0 +1,13 @@
+class_name RunEvent
+extends RefCounted
+
+enum Type {
+	STATE_CHANGED,
+	WAVE_STARTED,
+	WAVE_CLEARED,
+	PLANT_FLED,
+	APE_KILLED,
+	CARD_PICKED,
+	RUN_WON,
+	RUN_LOST,
+}
