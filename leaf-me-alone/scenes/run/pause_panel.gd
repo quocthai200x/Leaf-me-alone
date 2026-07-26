@@ -39,12 +39,20 @@ func _get_economy_system() -> EconomySystemScript:
 
 func _on_place_peanut_pressed() -> void:
 	EventBus.emit_run_event(
+		RunEventRes.Type.UI_INTENT,
+		{"intent": "select_species", "species_id": "peanut"}
+	)
+	EventBus.emit_run_event(
 		RunEventRes.Type.TUTORIAL_ACTION,
 		{"action": "place_peanut"}
 	)
 
 
 func _on_water_plant_pressed() -> void:
+	EventBus.emit_run_event(
+		RunEventRes.Type.UI_INTENT,
+		{"intent": "select_care"}
+	)
 	EventBus.emit_run_event(
 		RunEventRes.Type.TUTORIAL_ACTION,
 		{"action": "water_plant"}

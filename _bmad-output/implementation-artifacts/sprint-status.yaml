@@ -56,7 +56,7 @@ development_status:
   epic-2: in-progress
   2-1-godot-theme-foundation-and-economy-data: done
   2-2-economysystem-and-dogecoin-wallet: done
-  2-3-interactionmode-fsm-place-and-care-modes: backlog
+  2-3-interactionmode-fsm-place-and-care-modes: done
   2-4-plant-catalog-and-placement-validation: backlog
   2-5-water-and-fertilize-care-actions: backlog
   2-6-peanut-buff-debuff-species: backlog
