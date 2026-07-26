@@ -3,7 +3,6 @@ extends Node
 ## Events emitted: none
 ## Events listened: none
 
-const RunEventRes := preload("res://scripts/data/run_event.gd")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 
 const PEANUT_ID := "peanut"
