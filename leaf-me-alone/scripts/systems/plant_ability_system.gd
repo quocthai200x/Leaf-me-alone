@@ -1,11 +1,12 @@
 extends Node
-## Species combat abilities — Peanut N-fixation buff and allelopathy ape slow (Story 2.6).
+## Species combat abilities — Peanut buff/debuff (2.6), Cashew reflect (2.7).
 ## Events emitted: none
 ## Events listened: none
 
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 
 const PEANUT_ID := "peanut"
+const CASHEW_ID := "cashew"
 const ADJACENT_OFFSETS: Array[Vector2i] = [
 	Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
 ]
@@ -60,6 +61,21 @@ func get_ape_move_speed_multiplier(ape_cell: Vector2i) -> float:
 	return maxf(1.0 - slow_pct, 0.1)
 
 
+func resolve_plant_hit(plant_cell: Vector2i, incoming_damage: int) -> Dictionary:
+	var empty := {"plant_damage_taken": 0, "reflect_damage": 0}
+	var grid := RunManager.grid_data
+	if grid == null or not grid.has_plant(plant_cell):
+		return empty
+	var stats := get_combat_stats(plant_cell)
+	var defense := int(stats.get("defense", 0))
+	var plant_damage_taken := maxi(incoming_damage - defense, 0)
+	var reflect_damage := 0
+	if is_combat_active() and str(stats.get("species_id", "")) == CASHEW_ID:
+		var reflect_pct := float(_get_cashew_reflect().get("reflect_pct", 0.0))
+		reflect_damage = roundi(float(incoming_damage) * reflect_pct)
+	return {"plant_damage_taken": plant_damage_taken, "reflect_damage": reflect_damage}
+
+
 func has_adjacent_peanut(cell: Vector2i) -> bool:
 	var grid := RunManager.grid_data
 	if grid == null:
@@ -99,6 +115,13 @@ func _get_peanut_allelopathy() -> Dictionary:
 	if peanut == null:
 		return {}
 	return peanut.abilities.get("allelopathy", {}) as Dictionary
+
+
+func _get_cashew_reflect() -> Dictionary:
+	var cashew := ContentRegistry.get_species(CASHEW_ID)
+	if cashew == null:
+		return {}
+	return cashew.abilities.get("anacardic_reflect", {}) as Dictionary
 
 
 func _manhattan_distance(a: Vector2i, b: Vector2i) -> int:

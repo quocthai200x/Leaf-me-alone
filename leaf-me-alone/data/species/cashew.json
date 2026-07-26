@@ -4,5 +4,10 @@
   "plant_cost": 35,
   "hp": 90,
   "attack": 18,
-  "defense": 6
+  "defense": 6,
+  "abilities": {
+    "anacardic_reflect": {
+      "reflect_pct": 0.50
+    }
+  }
 }

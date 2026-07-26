@@ -1,5 +1,5 @@
 # generated: 2026-07-26T16:01:00+07:00
-# last_updated: 2026-07-26T19:30:00+07:00
+# last_updated: 2026-07-26T17:20:00+07:00
 # project: snake-rougelike
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-07-26T16:01:00+07:00
-last_updated: 2026-07-26T19:30:00+07:00
+last_updated: 2026-07-26T17:20:00+07:00
 project: snake-rougelike
 project_key: NOKEY
 tracking_system: file-system
@@ -60,7 +60,7 @@ development_status:
   2-4-plant-catalog-and-placement-validation: done
   2-5-water-and-fertilize-care-actions: done
   2-6-peanut-buff-debuff-species: done
-  2-7-cashew-attack-reflect-species: backlog
+  2-7-cashew-attack-reflect-species: done
   2-8-teak-defense-tank-species: backlog
   2-9-dissatisfaction-tease-pre-flee-indicator: backlog
   epic-2-retrospective: optional
