@@ -1,14 +1,17 @@
 extends Node2D
-## Map container — grid display scale and pan bounds for InputRouter.
+## Map container — grid display scale, pan bounds, placement preview for InputRouter.
 
 const GridRendererScene := preload("res://scenes/run/grid_renderer.tscn")
+const PlacementPreviewScript := preload("res://scripts/systems/placement_preview.gd")
 const GridDataRes := preload("res://scripts/data/grid_data.gd")
+const PlantPlacementSystemScript := preload("res://scripts/systems/plant_placement_system.gd")
 
 const TILE_SIZE := 16
 const DISPLAY_SCALE := 3.0
 const PAN_MARGIN := 80.0
 
 var _grid_renderer: Node2D
+var _placement_preview: Node2D
 var _visible_size: Vector2 = Vector2(1920.0, 1080.0)
 var _pan_enabled: bool = false
 
@@ -17,6 +20,10 @@ func _ready() -> void:
 	_grid_renderer = GridRendererScene.instantiate()
 	_grid_renderer.scale = Vector2(DISPLAY_SCALE, DISPLAY_SCALE)
 	add_child(_grid_renderer)
+
+	_placement_preview = PlacementPreviewScript.new()
+	_placement_preview.scale = Vector2(DISPLAY_SCALE, DISPLAY_SCALE)
+	add_child(_placement_preview)
 
 
 func sync_from_grid_data(grid: GridDataRes) -> void:
@@ -47,6 +54,55 @@ func apply_pan_delta(screen_delta: Vector2) -> void:
 		return
 	position += screen_delta
 	_clamp_position()
+
+
+func screen_to_grid(screen_pos: Vector2) -> Vector2i:
+	var local := get_global_transform_with_canvas().affine_inverse() * screen_pos
+	local /= DISPLAY_SCALE
+	return Vector2i(floori(local.x / TILE_SIZE), floori(local.y / TILE_SIZE))
+
+
+func update_placement_preview(screen_pos: Vector2, species_id: String) -> void:
+	if species_id.is_empty() or _placement_preview == null:
+		clear_placement_preview()
+		return
+	var cell := screen_to_grid(screen_pos)
+	var grid := RunManager.grid_data
+	if grid == null or not grid.is_in_bounds(cell):
+		clear_placement_preview()
+		return
+	var valid := false
+	var placement := _get_plant_placement_system()
+	if placement != null:
+		valid = placement.can_preview_place(cell, species_id)
+	_placement_preview.set_preview(cell, species_id, valid, true)
+
+
+func clear_placement_preview() -> void:
+	if _placement_preview != null:
+		_placement_preview.clear_preview()
+
+
+func try_place_at_screen(screen_pos: Vector2, species_id: String) -> bool:
+	var placement := _get_plant_placement_system()
+	if placement == null or species_id.is_empty():
+		return false
+	var cell := screen_to_grid(screen_pos)
+	return placement.try_place_plant(cell, species_id)
+
+
+func play_place_juice(_cell: Vector2i) -> void:
+	var base := Vector2(DISPLAY_SCALE, DISPLAY_SCALE)
+	var tween := create_tween()
+	tween.tween_property(_grid_renderer, "scale", base * 1.06, 0.08).set_trans(Tween.TRANS_BACK)
+	tween.tween_property(_grid_renderer, "scale", base, 0.12)
+
+
+func _get_plant_placement_system() -> PlantPlacementSystemScript:
+	var nodes := get_tree().get_nodes_in_group("plant_placement_system")
+	if nodes.is_empty():
+		return null
+	return nodes[0] as PlantPlacementSystemScript
 
 
 func _update_pan_state() -> void:

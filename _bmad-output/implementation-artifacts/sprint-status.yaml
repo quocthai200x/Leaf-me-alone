@@ -1,5 +1,5 @@
 # generated: 2026-07-26T16:01:00+07:00
-# last_updated: 2026-07-26T18:01:00+07:00
+# last_updated: 2026-07-26T19:30:00+07:00
 # project: snake-rougelike
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-07-26T16:01:00+07:00
-last_updated: 2026-07-26T18:01:00+07:00
+last_updated: 2026-07-26T19:30:00+07:00
 project: snake-rougelike
 project_key: NOKEY
 tracking_system: file-system
@@ -57,7 +57,7 @@ development_status:
   2-1-godot-theme-foundation-and-economy-data: done
   2-2-economysystem-and-dogecoin-wallet: done
   2-3-interactionmode-fsm-place-and-care-modes: done
-  2-4-plant-catalog-and-placement-validation: backlog
+  2-4-plant-catalog-and-placement-validation: done
   2-5-water-and-fertilize-care-actions: backlog
   2-6-peanut-buff-debuff-species: backlog
   2-7-cashew-attack-reflect-species: backlog

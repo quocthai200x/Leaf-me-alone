@@ -13,6 +13,8 @@ enum Step {
 }
 
 const PEANUT_COST := 20
+const PREP_STIPEND := 50
+const EconomySystemScript := preload("res://scripts/systems/economy_system.gd")
 
 var _step: int = Step.NONE
 var _prompt_ui: Control
@@ -50,10 +52,20 @@ func notify_dissatisfaction_seen() -> void:
 func start_prep_tutorial() -> void:
 	if _prep_complete:
 		return
+	_grant_prep_stipend()
 	_step = Step.PLACE_PEANUT
 	_show_prompt(
 		"Place a Peanut here — cheap and cheerful. (Ð%d)" % PEANUT_COST
 	)
+
+
+func _grant_prep_stipend() -> void:
+	var nodes := get_tree().get_nodes_in_group("economy_system")
+	if nodes.is_empty():
+		return
+	var economy := nodes[0] as EconomySystemScript
+	if economy != null and economy.get_balance() < PREP_STIPEND:
+		economy.try_earn(PREP_STIPEND - economy.get_balance())
 
 
 func _on_run_event(event: int, payload: Variant) -> void:

@@ -100,7 +100,36 @@ func _make_cell(soil: int) -> Dictionary:
 		"structure_ref": -1,
 		"concrete_overlay": false,
 		"movement_cost": _movement_cost_for_soil(soil),
+		"plant_species_id": "",
 	}
+
+
+func can_place_plant(pos: Vector2i) -> bool:
+	if not is_in_bounds(pos):
+		return false
+	var cell: Dictionary = _cells[_index(pos)]
+	if bool(cell.get("occupied", false)) or bool(cell.get("depleted", false)):
+		return false
+	return get_soil_type(pos) == SoilTypeRes.Type.RED
+
+
+func place_plant(pos: Vector2i, species_id: String) -> bool:
+	if not can_place_plant(pos):
+		return false
+	var cell: Dictionary = _cells[_index(pos)]
+	cell["occupied"] = true
+	cell["plant_species_id"] = species_id
+	_cells[_index(pos)] = cell
+	return true
+
+
+func get_plant_species_id(pos: Vector2i) -> String:
+	if not is_in_bounds(pos):
+		return ""
+	var cell: Dictionary = _cells[_index(pos)]
+	if not bool(cell.get("occupied", false)):
+		return ""
+	return str(cell.get("plant_species_id", ""))
 
 
 static func _movement_cost_for_soil(soil: int) -> float:

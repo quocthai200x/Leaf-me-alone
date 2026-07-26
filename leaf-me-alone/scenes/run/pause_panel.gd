@@ -5,13 +5,18 @@ const RunEventRes := preload("res://scripts/data/run_event.gd")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 const EconomySystemScript := preload("res://scripts/systems/economy_system.gd")
 
+const SPECIES_ORDER := ["peanut", "cashew", "teak"]
+const ROLE_LABELS := {"peanut": "Buff", "cashew": "ATK", "teak": "DEF"}
+
 @onready var _tutorial_actions: VBoxContainer = %TutorialActions
 @onready var _dogecoin_icon: Label = %DogecoinIcon
 @onready var _dogecoin_value: Label = %DogecoinValue
+@onready var _catalog_section: VBoxContainer = $Content/CatalogSection
 
 
 func _ready() -> void:
 	_apply_chip_theme()
+	_build_catalog()
 	refresh_dogecoin()
 	%PlacePeanutButton.pressed.connect(_on_place_peanut_pressed)
 	%WaterPlantButton.pressed.connect(_on_water_plant_pressed)
@@ -28,6 +33,43 @@ func refresh_dogecoin() -> void:
 func _apply_chip_theme() -> void:
 	_dogecoin_icon.theme_type_variation = &"numeric"
 	_dogecoin_value.theme_type_variation = &"numeric"
+
+
+func _build_catalog() -> void:
+	var placeholder := _catalog_section.get_node_or_null("CatalogPlaceholder")
+	if placeholder != null:
+		placeholder.queue_free()
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_catalog_section.add_child(row)
+
+	for species_id in SPECIES_ORDER:
+		var species := ContentRegistry.get_species(species_id)
+		if species == null:
+			continue
+		var btn := Button.new()
+		btn.custom_minimum_size = Vector2(88, 88)
+		btn.text = "%s\nÐ%d\n%s" % [
+			species.display_name,
+			species.plant_cost,
+			ROLE_LABELS.get(species_id, "")
+		]
+		btn.pressed.connect(_on_catalog_species_pressed.bind(species_id))
+		row.add_child(btn)
+
+
+func _on_catalog_species_pressed(species_id: String) -> void:
+	EventBus.emit_run_event(
+		RunEventRes.Type.UI_INTENT,
+		{"intent": "select_species", "species_id": species_id}
+	)
+	if species_id == "peanut":
+		EventBus.emit_run_event(
+			RunEventRes.Type.TUTORIAL_ACTION,
+			{"action": "place_peanut"}
+		)
 
 
 func _get_economy_system() -> EconomySystemScript:

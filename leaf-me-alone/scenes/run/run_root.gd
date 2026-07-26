@@ -58,6 +58,17 @@ func _on_run_event(event: int, payload: Variant) -> void:
 			_start_combat_if_ready()
 		return
 
+	if event == RunEventRes.Type.PLANT_PLACED:
+		var place_data: Dictionary = payload
+		var cell: Vector2i = place_data.get("cell", Vector2i(-1, -1))
+		if RunManager.grid_data != null and _map_view.has_method("sync_from_grid_data"):
+			_map_view.sync_from_grid_data(RunManager.grid_data)
+		if cell.x >= 0 and _map_view.has_method("play_place_juice"):
+			_map_view.play_place_juice(cell)
+		if _pause_panel.has_method("refresh_dogecoin"):
+			_pause_panel.refresh_dogecoin()
+		return
+
 	if event == RunEventRes.Type.APE_SPAWNED:
 		var spawn_data: Dictionary = payload
 		if int(spawn_data.get("wave", 0)) == 1 and int(spawn_data.get("index", 0)) >= 2:

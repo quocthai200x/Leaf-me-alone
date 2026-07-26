@@ -66,6 +66,9 @@ func _handle_ui_intent(data: Dictionary) -> void:
 func _set_mode(mode: int, species_id: String) -> void:
 	_mode = mode
 	_selected_species_id = species_id if mode == InteractionModeRes.Mode.PLACE_PLANT else ""
+	if _map_view != null and _map_view.has_method("clear_placement_preview"):
+		if mode != InteractionModeRes.Mode.PLACE_PLANT:
+			_map_view.clear_placement_preview()
 
 
 func _edit_modes_allowed() -> bool:
@@ -80,6 +83,24 @@ func _unhandled_input(event: InputEvent) -> void:
 				_set_mode(InteractionModeRes.Mode.IDLE, "")
 				get_viewport().set_input_as_handled()
 				return
+
+	if _mode == InteractionModeRes.Mode.PLACE_PLANT and _edit_modes_allowed():
+		if _map_view != null:
+			if event is InputEventMouseMotion:
+				var motion := event as InputEventMouseMotion
+				if _is_over_map(motion.position):
+					_map_view.update_placement_preview(motion.position, _selected_species_id)
+				else:
+					_map_view.clear_placement_preview()
+				get_viewport().set_input_as_handled()
+				return
+			if event is InputEventMouseButton:
+				var mb := event as InputEventMouseButton
+				if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and _is_over_map(mb.position):
+					_map_view.try_place_at_screen(mb.position, _selected_species_id)
+					get_viewport().set_input_as_handled()
+					return
+		return
 
 	if _mode != InteractionModeRes.Mode.IDLE:
 		return
