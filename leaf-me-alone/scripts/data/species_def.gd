@@ -1,6 +1,8 @@
 class_name SpeciesDef
 extends Resource
 
+const SoilTypeRes := preload("res://scripts/data/soil_type.gd")
+
 @export var id: String = ""
 @export var display_name: String = ""
 @export var plant_cost: int = 0
@@ -8,6 +10,9 @@ extends Resource
 @export var attack: int = 0
 @export var defense: int = 0
 @export var abilities: Dictionary = {}
+@export var preferred_soil: int = SoilTypeRes.Type.RED
+@export var weather_preference: String = "tropical_sun"
+@export var dissatisfaction_sensitive: bool = false
 
 
 static func from_dict(data: Dictionary) -> SpeciesDef:
@@ -22,6 +27,12 @@ static func from_dict(data: Dictionary) -> SpeciesDef:
 	def.defense = int(data["defense"])
 	if data.has("abilities") and typeof(data["abilities"]) == TYPE_DICTIONARY:
 		def.abilities = (data["abilities"] as Dictionary).duplicate(true)
+	if data.has("preferred_soil"):
+		def.preferred_soil = int(data["preferred_soil"])
+	if data.has("weather_preference"):
+		def.weather_preference = str(data["weather_preference"])
+	if data.has("dissatisfaction_sensitive"):
+		def.dissatisfaction_sensitive = bool(data["dissatisfaction_sensitive"])
 	return def
 
 

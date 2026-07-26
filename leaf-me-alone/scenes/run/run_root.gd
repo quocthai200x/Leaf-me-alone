@@ -82,6 +82,11 @@ func _on_run_event(event: int, payload: Variant) -> void:
 			_pause_panel.refresh_care_affordability()
 		return
 
+	if event == RunEventRes.Type.DISSATISFACTION_UPDATED:
+		if RunManager.grid_data != null and _map_view.has_method("sync_dissatisfaction_indicators"):
+			_map_view.sync_dissatisfaction_indicators(RunManager.grid_data)
+		return
+
 	if event == RunEventRes.Type.APE_SPAWNED:
 		var spawn_data: Dictionary = payload
 		if int(spawn_data.get("wave", 0)) == 1 and int(spawn_data.get("index", 0)) >= 2:

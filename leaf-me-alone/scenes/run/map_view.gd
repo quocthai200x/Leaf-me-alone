@@ -33,6 +33,11 @@ func sync_from_grid_data(grid: GridDataRes) -> void:
 	_clamp_position()
 
 
+func sync_dissatisfaction_indicators(grid: GridDataRes) -> void:
+	if _grid_renderer.has_method("sync_dissatisfaction_indicators"):
+		_grid_renderer.sync_dissatisfaction_indicators(grid)
+
+
 func set_visible_map_size(size: Vector2) -> void:
 	_visible_size = size
 	_update_pan_state()

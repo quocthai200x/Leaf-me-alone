@@ -1,0 +1,128 @@
+extends Node
+## Multi-cause dissatisfaction accumulation (Story 3.1). Flee deferred to Story 3.3.
+
+const RunEventRes := preload("res://scripts/data/run_event.gd")
+const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
+const GameConstantsRes := preload("res://scripts/utils/constants.gd")
+const DissatisfactionCauseLogicRes := preload(
+	"res://scripts/systems/dissatisfaction_cause_logic.gd"
+)
+
+var _pause_care: Dictionary = {}
+var _combat_tick_timer: float = 0.0
+
+
+func _ready() -> void:
+	add_to_group("dissatisfaction_system")
+	EventBus.run_event.connect(_on_run_event)
+
+
+func _process(delta: float) -> void:
+	if RunManager.get_state() != RunStateEnumRes.State.CombatPhase:
+		return
+	_combat_tick_timer -= delta
+	if _combat_tick_timer > 0.0:
+		return
+	_combat_tick_timer = GameConstantsRes.get_dissatisfaction_combat_tick_sec()
+	_apply_environmental_dissatisfaction()
+
+
+func _on_run_event(event: int, payload: Variant) -> void:
+	if event == RunEventRes.Type.PLANT_CARED:
+		var care_payload: Dictionary = payload
+		_mark_care(care_payload.get("cell", Vector2i(-1, -1)), str(care_payload.get("care_type", "")))
+		return
+	if event == RunEventRes.Type.PLANT_PLACED:
+		var place_payload: Dictionary = payload
+		_init_care_tracking(place_payload.get("cell", Vector2i(-1, -1)))
+		return
+	if event != RunEventRes.Type.STATE_CHANGED:
+		return
+	var state_payload: Dictionary = payload
+	var to_state: int = int(state_payload.get("to", -1))
+	if to_state == RunStateEnumRes.State.PausePhase:
+		_reset_pause_care_tracking()
+	elif to_state == RunStateEnumRes.State.CombatPhase:
+		_apply_missed_care_penalties()
+		_combat_tick_timer = 0.0
+
+
+func _reset_pause_care_tracking() -> void:
+	_pause_care.clear()
+	var grid := RunManager.grid_data
+	if grid == null:
+		return
+	for y in grid.height:
+		for x in grid.width:
+			var pos := Vector2i(x, y)
+			if grid.has_plant(pos):
+				_init_care_tracking(pos)
+
+
+func _init_care_tracking(cell: Vector2i) -> void:
+	if cell.x < 0:
+		return
+	_pause_care[cell] = {"watered": false, "fertilized": false}
+
+
+func _mark_care(cell: Vector2i, care_type: String) -> void:
+	if cell.x < 0:
+		return
+	if not _pause_care.has(cell):
+		_init_care_tracking(cell)
+	var entry: Dictionary = _pause_care[cell]
+	if care_type == "water":
+		entry["watered"] = true
+	elif care_type == "fertilize":
+		entry["fertilized"] = true
+	_pause_care[cell] = entry
+
+
+func _apply_missed_care_penalties() -> void:
+	var grid := RunManager.grid_data
+	if grid == null:
+		return
+	var changed := false
+	for cell_key in _pause_care.keys():
+		var cell: Vector2i = cell_key
+		if not grid.has_plant(cell):
+			continue
+		var entry: Dictionary = _pause_care[cell]
+		var delta := DissatisfactionCauseLogicRes.compute_missed_care_delta(
+			bool(entry.get("watered", false)),
+			bool(entry.get("fertilized", false))
+		)
+		if delta <= 0:
+			continue
+		grid.adjust_plant_dissatisfaction(cell, delta)
+		changed = true
+	if changed:
+		_emit_dissatisfaction_updated()
+
+
+func _apply_environmental_dissatisfaction() -> void:
+	var grid := RunManager.grid_data
+	if grid == null:
+		return
+	var weather_id := RunManager.run_state.current_weather
+	var changed := false
+	for y in grid.height:
+		for x in grid.width:
+			var pos := Vector2i(x, y)
+			if not grid.has_plant(pos):
+				continue
+			var species_id := grid.get_plant_species_id(pos)
+			var species := ContentRegistry.get_species(species_id)
+			var delta := DissatisfactionCauseLogicRes.compute_environmental_delta(
+				grid, pos, species, weather_id
+			)
+			if delta <= 0:
+				continue
+			grid.adjust_plant_dissatisfaction(pos, delta)
+			changed = true
+	if changed:
+		_emit_dissatisfaction_updated()
+
+
+func _emit_dissatisfaction_updated() -> void:
+	EventBus.emit_run_event(RunEventRes.Type.DISSATISFACTION_UPDATED, {})

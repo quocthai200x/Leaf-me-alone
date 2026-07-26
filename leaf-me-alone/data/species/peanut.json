@@ -5,6 +5,8 @@
   "hp": 80,
   "attack": 5,
   "defense": 8,
+  "preferred_soil": 0,
+  "weather_preference": "tropical_sun",
   "abilities": {
     "n_fixation": {
       "attack_buff_pct": 0.15,

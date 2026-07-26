@@ -5,6 +5,8 @@
   "hp": 150,
   "attack": 8,
   "defense": 20,
+  "preferred_soil": 0,
+  "weather_preference": "tropical_sun",
   "abilities": {
     "hardwood_tank": {
       "damage_reduction_pct": 0.30

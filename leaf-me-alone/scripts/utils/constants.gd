@@ -11,9 +11,26 @@ const MAX_COMBAT_WAVES := 5
 const DISSATISFACTION_TEASE_THRESHOLD := 50
 const DISSATISFACTION_METER_THRESHOLD := 50
 
+# Dissatisfaction accumulation (Story 3.1)
+const DISSATISFACTION_MISSED_CARE_PER_CAUSE := 25
+const DISSATISFACTION_SOIL_MISMATCH_DELTA := 10
+const DISSATISFACTION_ALLELOPATHY_DELTA := 10
+const DISSATISFACTION_WEATHER_MISMATCH_DELTA := 10
+const DISSATISFACTION_COMBAT_TICK_SEC := 30.0
+const DEBUG_DISSATISFACTION_COMBAT_TICK_SEC := 1.0
+
+const DEFAULT_RUN_WEATHER := "tropical_sun"
+const WEATHER_OPTIONS: Array[String] = ["tropical_sun", "tropical_rain"]
+
 
 static func get_wave_duration_sec(wave_number: int) -> float:
 	var idx := clampi(wave_number - 1, 0, WAVE_DURATIONS_SEC.size() - 1)
 	if OS.is_debug_build():
 		return DEBUG_WAVE_DURATIONS_SEC[idx]
 	return WAVE_DURATIONS_SEC[idx]
+
+
+static func get_dissatisfaction_combat_tick_sec() -> float:
+	if OS.is_debug_build():
+		return DEBUG_DISSATISFACTION_COMBAT_TICK_SEC
+	return DISSATISFACTION_COMBAT_TICK_SEC

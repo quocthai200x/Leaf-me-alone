@@ -26,6 +26,7 @@ func start_run(seed_value: int) -> GridDataRes:
 		return null
 	transition_to(RunStateEnum.State.RunStart)
 	run_state.init_from_seed(seed_value)
+	_assign_run_weather(seed_value)
 	grid_data = GridDataRes.new()
 	grid_data.generate_from_seed(run_state.master_seed)
 	run_state.wave_index = 0
@@ -128,3 +129,12 @@ func _apply_main_menu_state() -> void:
 	run_state = RunState.new()
 	grid_data = null
 	_state = RunStateEnum.State.MainMenu
+
+
+func _assign_run_weather(seed_value: int) -> void:
+	var options := GameConstantsRes.WEATHER_OPTIONS
+	if options.is_empty():
+		run_state.current_weather = GameConstantsRes.DEFAULT_RUN_WEATHER
+		return
+	var idx := absi(seed_value) % options.size()
+	run_state.current_weather = options[idx]
