@@ -44,7 +44,7 @@ story_location: "{project-root}/_bmad-output/implementation-artifacts"
 development_status:
   epic-1: in-progress
   1-1-bootstrap-godot-project-and-core-autoloads: done
-  1-2-contentregistry-and-fallback-data-pipeline: review
+  1-2-contentregistry-and-fallback-data-pipeline: done
   1-3-griddata-gridrenderer-and-seeded-tropical-map: backlog
   1-4-runmanager-state-machine-and-runroot-scene: backlog
   1-5-main-menu-and-run-start-flow: backlog
