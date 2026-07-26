@@ -1,14 +1,19 @@
 extends Node
 
+const EconomyDefScript := preload("res://scripts/data/economy_def.gd")
+
 const SPECIES_DIR := "res://data/species/"
 const APES_DIR := "res://data/apes/"
+const ECONOMY_PATH := "res://data/economy.json"
 const FALLBACK_SPECIES_PATH := "res://data/fallback/species.json"
 const FALLBACK_APES_PATH := "res://data/fallback/apes.json"
+const FALLBACK_ECONOMY_PATH := "res://data/fallback/economy.json"
 const MIN_SPECIES := 3
 const MIN_APES := 2
 
 var _species: Dictionary = {}
 var _apes: Dictionary = {}
+var _economy: EconomyDef = null
 var _loaded: bool = false
 
 
@@ -16,7 +21,7 @@ func _ready() -> void:
 	var ok := load_all()
 	if ok:
 		print(
-			"[ContentRegistry] Boot load OK — %d species, %d apes"
+			"[ContentRegistry] Boot load OK — %d species, %d apes, economy loaded"
 			% [_species.size(), _apes.size()]
 		)
 	else:
@@ -26,15 +31,19 @@ func _ready() -> void:
 func load_all() -> bool:
 	_species.clear()
 	_apes.clear()
+	_economy = null
 	_loaded = false
 
 	var species_ok := _load_species()
 	var apes_ok := _load_apes()
-	if not (species_ok and apes_ok):
+	var economy_ok := _load_economy()
+	if not (species_ok and apes_ok and economy_ok):
 		_species.clear()
 		_apes.clear()
+		_economy = null
 		_loaded = false
 		return false
+	_validate_economy_species_costs()
 	_loaded = true
 	return true
 
@@ -79,6 +88,47 @@ func get_all_ape_ids() -> Array[String]:
 		ids.append(key)
 	ids.sort()
 	return ids
+
+
+func get_economy() -> EconomyDef:
+	if _economy == null:
+		push_warning("[ContentRegistry] Economy not loaded")
+		return null
+	return _economy.duplicate(true) as EconomyDef
+
+
+func _load_economy() -> bool:
+	var data: Variant = _parse_json_file(ECONOMY_PATH)
+	if typeof(data) != TYPE_DICTIONARY:
+		push_warning("[ContentRegistry] Primary economy load failed; trying fallback")
+		data = _parse_json_file(FALLBACK_ECONOMY_PATH)
+	if typeof(data) != TYPE_DICTIONARY:
+		push_error("[ContentRegistry] Failed to load economy from primary and fallback")
+		return false
+	var def := EconomyDefScript.from_dict(data)
+	if def == null:
+		push_error("[ContentRegistry] Invalid economy data")
+		return false
+	_economy = def
+	return true
+
+
+func _validate_economy_species_costs() -> void:
+	if _economy == null:
+		return
+	for species_id in _species.keys():
+		if not _economy.species_costs.has(species_id):
+			push_warning(
+				"[ContentRegistry] Economy missing species cost for: %s" % species_id
+			)
+			continue
+		var species_def: SpeciesDef = _species[species_id]
+		var economy_cost := int(_economy.species_costs[species_id])
+		if species_def.plant_cost != economy_cost:
+			push_warning(
+				"[ContentRegistry] plant_cost mismatch for %s: species=%d economy=%d"
+				% [species_id, species_def.plant_cost, economy_cost]
+			)
 
 
 func _load_species() -> bool:

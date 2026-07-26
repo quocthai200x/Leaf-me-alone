@@ -1,0 +1,9 @@
+{
+  "water_cost": 5,
+  "fertilize_cost": 10,
+  "species_costs": {
+    "peanut": 20,
+    "cashew": 35,
+    "teak": 50
+  }
+}
