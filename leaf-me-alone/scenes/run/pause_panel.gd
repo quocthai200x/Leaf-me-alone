@@ -12,12 +12,18 @@ const ROLE_LABELS := {"peanut": "Buff", "cashew": "ATK", "teak": "DEF"}
 @onready var _dogecoin_icon: Label = %DogecoinIcon
 @onready var _dogecoin_value: Label = %DogecoinValue
 @onready var _catalog_section: VBoxContainer = $Content/CatalogSection
+@onready var _care_section: VBoxContainer = $Content/CareSection
+
+var _water_button: Button
+var _fertilize_button: Button
 
 
 func _ready() -> void:
 	_apply_chip_theme()
 	_build_catalog()
+	_build_care_actions()
 	refresh_dogecoin()
+	refresh_care_affordability()
 	%PlacePeanutButton.pressed.connect(_on_place_peanut_pressed)
 	%WaterPlantButton.pressed.connect(_on_water_plant_pressed)
 	EventBus.run_event.connect(_on_run_event)
@@ -60,6 +66,64 @@ func _build_catalog() -> void:
 		row.add_child(btn)
 
 
+func refresh_care_affordability() -> void:
+	if _water_button == null or _fertilize_button == null:
+		return
+	var economy := _get_economy_system()
+	var balance := economy.get_balance() if economy != null else 0
+	var economy_def := ContentRegistry.get_economy()
+	if economy_def == null:
+		return
+	var water_cost := economy_def.water_cost
+	var fertilize_cost := economy_def.fertilize_cost
+	var can_water := balance >= water_cost
+	var can_fertilize := balance >= fertilize_cost
+	_water_button.disabled = not can_water
+	_fertilize_button.disabled = not can_fertilize
+	_water_button.tooltip_text = "Need Ð%d to water" % water_cost if not can_water else ""
+	_fertilize_button.tooltip_text = "Need Ð%d to fertilize" % fertilize_cost if not can_fertilize else ""
+
+
+func _build_care_actions() -> void:
+	var placeholder := _care_section.get_node_or_null("CarePlaceholder")
+	if placeholder != null:
+		placeholder.queue_free()
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	_care_section.add_child(row)
+
+	var economy_def := ContentRegistry.get_economy()
+	var water_cost := economy_def.water_cost if economy_def != null else 5
+	var fertilize_cost := economy_def.fertilize_cost if economy_def != null else 10
+
+	_water_button = Button.new()
+	_water_button.custom_minimum_size = Vector2(0, 44)
+	_water_button.text = "Water (Ð%d)" % water_cost
+	_water_button.pressed.connect(_on_water_pressed)
+	row.add_child(_water_button)
+
+	_fertilize_button = Button.new()
+	_fertilize_button.custom_minimum_size = Vector2(0, 44)
+	_fertilize_button.text = "Fertilize (Ð%d)" % fertilize_cost
+	_fertilize_button.pressed.connect(_on_fertilize_pressed)
+	row.add_child(_fertilize_button)
+
+
+func _on_water_pressed() -> void:
+	EventBus.emit_run_event(
+		RunEventRes.Type.UI_INTENT,
+		{"intent": "select_care", "care_type": "water"}
+	)
+
+
+func _on_fertilize_pressed() -> void:
+	EventBus.emit_run_event(
+		RunEventRes.Type.UI_INTENT,
+		{"intent": "select_care", "care_type": "fertilize"}
+	)
+
+
 func _on_catalog_species_pressed(species_id: String) -> void:
 	EventBus.emit_run_event(
 		RunEventRes.Type.UI_INTENT,
@@ -91,10 +155,7 @@ func _on_place_peanut_pressed() -> void:
 
 
 func _on_water_plant_pressed() -> void:
-	EventBus.emit_run_event(
-		RunEventRes.Type.UI_INTENT,
-		{"intent": "select_care"}
-	)
+	_on_water_pressed()
 	EventBus.emit_run_event(
 		RunEventRes.Type.TUTORIAL_ACTION,
 		{"action": "water_plant"}
@@ -104,12 +165,16 @@ func _on_water_plant_pressed() -> void:
 func _on_run_event(event: int, payload: Variant) -> void:
 	if event == RunEventRes.Type.DOGECOIN_CHANGED:
 		refresh_dogecoin()
+		refresh_care_affordability()
+	elif event == RunEventRes.Type.PLANT_CARED:
+		refresh_care_affordability()
 	elif event == RunEventRes.Type.TUTORIAL_ACTION:
 		var data: Dictionary = payload
 		if str(data.get("action", "")) == "prep_complete":
 			_update_tutorial_actions_visibility()
 	elif event == RunEventRes.Type.STATE_CHANGED:
 		_update_tutorial_actions_visibility()
+		refresh_care_affordability()
 
 
 func _update_tutorial_actions_visibility() -> void:

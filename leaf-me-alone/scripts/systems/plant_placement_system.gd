@@ -39,6 +39,8 @@ func try_place_plant(cell: Vector2i, species_id: String) -> bool:
 		if economy.has_method("try_earn"):
 			economy.try_earn(species.plant_cost)
 		return false
+	if grid.get_plant_hp(cell) <= 0:
+		grid.set_plant_hp(cell, species.hp)
 	EventBus.emit_run_event(
 		RunEventRes.Type.PLANT_PLACED,
 		{"cell": cell, "species_id": species_id, "cost": species.plant_cost}

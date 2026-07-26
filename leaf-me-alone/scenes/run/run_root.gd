@@ -69,6 +69,17 @@ func _on_run_event(event: int, payload: Variant) -> void:
 			_pause_panel.refresh_dogecoin()
 		return
 
+	if event == RunEventRes.Type.PLANT_CARED:
+		var care_data: Dictionary = payload
+		var cell: Vector2i = care_data.get("cell", Vector2i(-1, -1))
+		if cell.x >= 0 and _map_view.has_method("play_care_juice"):
+			_map_view.play_care_juice(cell)
+		if _pause_panel.has_method("refresh_dogecoin"):
+			_pause_panel.refresh_dogecoin()
+		if _pause_panel.has_method("refresh_care_affordability"):
+			_pause_panel.refresh_care_affordability()
+		return
+
 	if event == RunEventRes.Type.APE_SPAWNED:
 		var spawn_data: Dictionary = payload
 		if int(spawn_data.get("wave", 0)) == 1 and int(spawn_data.get("index", 0)) >= 2:

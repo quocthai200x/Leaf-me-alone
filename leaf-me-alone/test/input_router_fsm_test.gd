@@ -36,9 +36,10 @@ func test_select_care_enters_care_mode() -> void:
 	RunManager.start_run(102)
 	EventBus.emit_run_event(
 		RunEventRes.Type.UI_INTENT,
-		{"intent": "select_care"}
+		{"intent": "select_care", "care_type": "water"}
 	)
 	assert_int(_router.get_mode()).is_equal(InteractionModeRes.Mode.CARE)
+	assert_str(_router.get_selected_care_type()).is_equal("water")
 	assert_str(_router.get_selected_species_id()).is_empty()
 
 

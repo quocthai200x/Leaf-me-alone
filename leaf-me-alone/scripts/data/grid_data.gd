@@ -101,6 +101,8 @@ func _make_cell(soil: int) -> Dictionary:
 		"concrete_overlay": false,
 		"movement_cost": _movement_cost_for_soil(soil),
 		"plant_species_id": "",
+		"plant_hp": 0,
+		"plant_dissatisfaction": 0,
 	}
 
 
@@ -113,14 +115,49 @@ func can_place_plant(pos: Vector2i) -> bool:
 	return get_soil_type(pos) == SoilTypeRes.Type.RED
 
 
-func place_plant(pos: Vector2i, species_id: String) -> bool:
+func place_plant(pos: Vector2i, species_id: String, max_hp: int = 0) -> bool:
 	if not can_place_plant(pos):
 		return false
 	var cell: Dictionary = _cells[_index(pos)]
 	cell["occupied"] = true
 	cell["plant_species_id"] = species_id
+	cell["plant_hp"] = max_hp
+	cell["plant_dissatisfaction"] = 0
 	_cells[_index(pos)] = cell
 	return true
+
+
+func has_plant(pos: Vector2i) -> bool:
+	return not get_plant_species_id(pos).is_empty()
+
+
+func get_plant_hp(pos: Vector2i) -> int:
+	if not has_plant(pos):
+		return 0
+	return int(_cells[_index(pos)].get("plant_hp", 0))
+
+
+func set_plant_hp(pos: Vector2i, hp: int) -> void:
+	if not has_plant(pos):
+		return
+	var cell: Dictionary = _cells[_index(pos)]
+	cell["plant_hp"] = maxi(hp, 0)
+	_cells[_index(pos)] = cell
+
+
+func get_plant_dissatisfaction(pos: Vector2i) -> int:
+	if not has_plant(pos):
+		return 0
+	return int(_cells[_index(pos)].get("plant_dissatisfaction", 0))
+
+
+func adjust_plant_dissatisfaction(pos: Vector2i, delta: int) -> void:
+	if not has_plant(pos):
+		return
+	var cell: Dictionary = _cells[_index(pos)]
+	var next := clampi(int(cell.get("plant_dissatisfaction", 0)) + delta, 0, 100)
+	cell["plant_dissatisfaction"] = next
+	_cells[_index(pos)] = cell
 
 
 func get_plant_species_id(pos: Vector2i) -> String:

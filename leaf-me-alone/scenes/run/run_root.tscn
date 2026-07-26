@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://run_root_scene"]
+[gd_scene load_steps=12 format=3 uid="uid://run_root_scene"]
 
 [ext_resource type="Script" path="res://scenes/run/run_root.gd" id="1_run_root"]
 [ext_resource type="PackedScene" uid="uid://pause_panel_shell" path="res://scenes/run/pause_panel.tscn" id="2_pause"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/systems/wave_spawner.gd" id="8_spawner"]
 [ext_resource type="Script" path="res://scripts/systems/economy_system.gd" id="9_economy"]
 [ext_resource type="Script" path="res://scripts/systems/plant_placement_system.gd" id="10_placement"]
+[ext_resource type="Script" path="res://scripts/systems/care_system.gd" id="11_care"]
 
 [node name="RunRoot" type="Node2D"]
 script = ExtResource("1_run_root")
@@ -19,6 +20,9 @@ script = ExtResource("9_economy")
 
 [node name="PlantPlacementSystem" type="Node" parent="."]
 script = ExtResource("10_placement")
+
+[node name="CareSystem" type="Node" parent="."]
+script = ExtResource("11_care")
 
 [node name="MapView" parent="." instance=ExtResource("4_map")]
 unique_name_in_owner = true
