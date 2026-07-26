@@ -78,10 +78,11 @@ theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
 theme_override_font_sizes/font_size = 12
 text = "WEATHER"
 
-[node name="WeatherPlaceholder" type="Label" parent="Content/WeatherSection"]
+[node name="WeatherValue" type="Label" parent="Content/WeatherSection"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
-text = "Sunny (stub)"
+theme_override_colors/font_color = Color(0.960784, 0.941176, 0.901961, 1)
+text = "Now: —"
 autowrap_mode = 2
 
 [node name="CatalogSection" type="VBoxContainer" parent="Content"]

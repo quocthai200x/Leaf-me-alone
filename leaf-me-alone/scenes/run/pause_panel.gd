@@ -4,18 +4,25 @@ extends Control
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 const EconomySystemScript := preload("res://scripts/systems/economy_system.gd")
+const DissatisfactionCauseLogicRes := preload(
+	"res://scripts/systems/dissatisfaction_cause_logic.gd"
+)
+const WeatherDefRes := preload("res://scripts/data/weather_def.gd")
 
 const SPECIES_ORDER := ["peanut", "cashew", "teak"]
 const ROLE_LABELS := {"peanut": "Buff", "cashew": "ATK", "teak": "DEF"}
+const WEATHER_MISMATCH_ICON := "⚠"
 
 @onready var _tutorial_actions: VBoxContainer = %TutorialActions
 @onready var _dogecoin_icon: Label = %DogecoinIcon
 @onready var _dogecoin_value: Label = %DogecoinValue
+@onready var _weather_value: Label = %WeatherValue
 @onready var _catalog_section: VBoxContainer = $Content/CatalogSection
 @onready var _care_section: VBoxContainer = $Content/CareSection
 
 var _water_button: Button
 var _fertilize_button: Button
+var _catalog_buttons: Dictionary = {}
 
 
 func _ready() -> void:
@@ -23,6 +30,7 @@ func _ready() -> void:
 	_build_catalog()
 	_build_care_actions()
 	refresh_dogecoin()
+	refresh_weather()
 	refresh_care_affordability()
 	%PlacePeanutButton.pressed.connect(_on_place_peanut_pressed)
 	%WaterPlantButton.pressed.connect(_on_water_plant_pressed)
@@ -34,6 +42,36 @@ func refresh_dogecoin() -> void:
 	var economy := _get_economy_system()
 	var balance := economy.get_balance() if economy != null else RunManager.run_state.dogecoin
 	_dogecoin_value.text = str(balance)
+
+
+func refresh_weather() -> void:
+	if _weather_value == null:
+		return
+	var weather_id := RunManager.run_state.current_weather
+	_weather_value.text = WeatherDefRes.format_pause_readout(weather_id)
+	_refresh_catalog_weather_icons()
+
+
+func _refresh_catalog_weather_icons() -> void:
+	var weather_id := RunManager.run_state.current_weather
+	for species_id in _catalog_buttons.keys():
+		var btn: Button = _catalog_buttons[species_id]
+		var species := ContentRegistry.get_species(species_id)
+		if species == null:
+			continue
+		var mismatch := DissatisfactionCauseLogicRes.has_weather_mismatch(species, weather_id)
+		var icon_suffix := " %s" % WEATHER_MISMATCH_ICON if mismatch else ""
+		btn.text = "%s\nÐ%d\n%s%s" % [
+			species.display_name,
+			species.plant_cost,
+			ROLE_LABELS.get(species_id, ""),
+			icon_suffix,
+		]
+		btn.tooltip_text = (
+			"Weather mismatch — dissatisfaction rises faster"
+			if mismatch
+			else ""
+		)
 
 
 func _apply_chip_theme() -> void:
@@ -64,6 +102,7 @@ func _build_catalog() -> void:
 		]
 		btn.pressed.connect(_on_catalog_species_pressed.bind(species_id))
 		row.add_child(btn)
+		_catalog_buttons[species_id] = btn
 
 
 func refresh_care_affordability() -> void:
@@ -175,6 +214,7 @@ func _on_run_event(event: int, payload: Variant) -> void:
 	elif event == RunEventRes.Type.STATE_CHANGED:
 		_update_tutorial_actions_visibility()
 		refresh_care_affordability()
+		refresh_weather()
 
 
 func _update_tutorial_actions_visibility() -> void:

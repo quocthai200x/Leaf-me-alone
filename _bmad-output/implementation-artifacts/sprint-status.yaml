@@ -70,7 +70,7 @@ development_status:
   3-3-flee-threshold-and-hr-modifier-hook: done
   3-4-flee-sequence-pattern-tier-0-usp: done
   3-5-depleted-tile-state-after-flee: done
-  3-6-weather-stub-single-weather-type: backlog
+  3-6-weather-stub-single-weather-type: done
   3-7-mass-flee-feedback-and-warning-chirp: backlog
   epic-3-retrospective: optional
   epic-4: backlog
