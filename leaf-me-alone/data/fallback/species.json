@@ -5,7 +5,17 @@
     "plant_cost": 20,
     "hp": 80,
     "attack": 5,
-    "defense": 8
+    "defense": 8,
+    "abilities": {
+      "n_fixation": {
+        "attack_buff_pct": 0.15,
+        "defense_buff_pct": 0.10
+      },
+      "allelopathy": {
+        "ape_slow_pct": 0.25,
+        "radius_tiles": 1
+      }
+    }
   },
   {
     "id": "cashew",

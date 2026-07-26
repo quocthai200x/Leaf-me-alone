@@ -7,6 +7,7 @@ extends Resource
 @export var hp: int = 0
 @export var attack: int = 0
 @export var defense: int = 0
+@export var abilities: Dictionary = {}
 
 
 static func from_dict(data: Dictionary) -> SpeciesDef:
@@ -19,6 +20,8 @@ static func from_dict(data: Dictionary) -> SpeciesDef:
 	def.hp = int(data["hp"])
 	def.attack = int(data["attack"])
 	def.defense = int(data["defense"])
+	if data.has("abilities") and typeof(data["abilities"]) == TYPE_DICTIONARY:
+		def.abilities = (data["abilities"] as Dictionary).duplicate(true)
 	return def
 
 

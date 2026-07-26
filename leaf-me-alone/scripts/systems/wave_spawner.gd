@@ -66,6 +66,13 @@ func _spawn_next_ape() -> void:
 		return
 	_spawned_count += 1
 	_spawn_timer = _spawn_interval
+	var spawn_cell := _default_spawn_cell()
+	var move_mult := 1.0
+	var ability_nodes := get_tree().get_nodes_in_group("plant_ability_system")
+	if not ability_nodes.is_empty():
+		var ability = ability_nodes[0]
+		if ability.has_method("get_ape_move_speed_multiplier"):
+			move_mult = ability.get_ape_move_speed_multiplier(spawn_cell)
 	EventBus.emit_run_event(
 		RunEventRes.Type.APE_SPAWNED,
 		{
@@ -73,9 +80,18 @@ func _spawn_next_ape() -> void:
 			"ape_id": ape_id,
 			"index": _spawned_count,
 			"total": _target_count,
+			"spawn_cell": spawn_cell,
+			"move_speed_multiplier": move_mult,
 		}
 	)
 	print("[WaveSpawner] Spawned %s (%d/%d)" % [ape_id, _spawned_count, _target_count])
+
+
+func _default_spawn_cell() -> Vector2i:
+	var grid := RunManager.grid_data
+	if grid == null:
+		return Vector2i.ZERO
+	return Vector2i(grid.width / 2, 0)
 
 
 func _load_wave_script(wave_number: int) -> Dictionary:
