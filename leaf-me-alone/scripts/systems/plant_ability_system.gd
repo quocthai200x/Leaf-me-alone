@@ -7,6 +7,7 @@ const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 
 const PEANUT_ID := "peanut"
 const CASHEW_ID := "cashew"
+const TEAK_ID := "teak"
 const ADJACENT_OFFSETS: Array[Vector2i] = [
 	Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1),
 ]
@@ -70,7 +71,11 @@ func resolve_plant_hit(plant_cell: Vector2i, incoming_damage: int) -> Dictionary
 	var defense := int(stats.get("defense", 0))
 	var plant_damage_taken := maxi(incoming_damage - defense, 0)
 	var reflect_damage := 0
-	if is_combat_active() and str(stats.get("species_id", "")) == CASHEW_ID:
+	var species_id := str(stats.get("species_id", ""))
+	if is_combat_active() and species_id == TEAK_ID:
+		var reduction_pct := float(_get_teak_tank().get("damage_reduction_pct", 0.0))
+		plant_damage_taken = roundi(float(plant_damage_taken) * (1.0 - reduction_pct))
+	if is_combat_active() and species_id == CASHEW_ID:
 		var reflect_pct := float(_get_cashew_reflect().get("reflect_pct", 0.0))
 		reflect_damage = roundi(float(incoming_damage) * reflect_pct)
 	return {"plant_damage_taken": plant_damage_taken, "reflect_damage": reflect_damage}
@@ -122,6 +127,13 @@ func _get_cashew_reflect() -> Dictionary:
 	if cashew == null:
 		return {}
 	return cashew.abilities.get("anacardic_reflect", {}) as Dictionary
+
+
+func _get_teak_tank() -> Dictionary:
+	var teak := ContentRegistry.get_species(TEAK_ID)
+	if teak == null:
+		return {}
+	return teak.abilities.get("hardwood_tank", {}) as Dictionary
 
 
 func _manhattan_distance(a: Vector2i, b: Vector2i) -> int:
