@@ -1,6 +1,6 @@
 extends Node2D
 ## Events emitted: none
-## Events listened: STATE_CHANGED
+## Events listened: STATE_CHANGED, TUTORIAL_ACTION
 
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 const RunEventRes := preload("res://scripts/data/run_event.gd")
@@ -16,12 +16,16 @@ const COMBAT_VISIBLE_MAP_WIDTH := 1920.0
 @onready var _combat_hud: Control = %CombatHUD
 @onready var _map_view: Node2D = %MapView
 @onready var _input_router: Node = $InputRouter
+@onready var _tutorial_prompt: Control = %TutorialPrompt
+@onready var _tutorial_system: Node = $TutorialSystem
+@onready var _wave_spawner: Node = $WaveSpawner
 
 var _combat_timer: float = 0.0
 
 
 func _ready() -> void:
 	EventBus.run_event.connect(_on_run_event)
+	_tutorial_system.setup(_tutorial_prompt)
 
 	if not ContentRegistry.is_loaded():
 		_status_label.text = "Content load FAILED"
@@ -35,12 +39,7 @@ func _ready() -> void:
 	_map_view.sync_from_grid_data(grid)
 	_apply_phase_ui(RunManager.get_state())
 	_update_status()
-
-	if RunManager.get_state() == RunStateEnumRes.State.PausePhase:
-		if not RunManager.begin_combat_wave():
-			push_error("RunRoot: failed to begin wave 1")
-			RunManager.enter_main_menu()
-			get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	_handle_pause_entry()
 
 
 func _process(delta: float) -> void:
@@ -53,19 +52,64 @@ func _process(delta: float) -> void:
 
 
 func _on_run_event(event: int, payload: Variant) -> void:
+	if event == RunEventRes.Type.TUTORIAL_ACTION:
+		var data: Dictionary = payload
+		if str(data.get("action", "")) == "prep_complete":
+			_start_combat_if_ready()
+		return
+
+	if event == RunEventRes.Type.APE_SPAWNED:
+		var spawn_data: Dictionary = payload
+		if int(spawn_data.get("wave", 0)) == 1 and int(spawn_data.get("index", 0)) >= 2:
+			if _tutorial_system.has_method("notify_dissatisfaction_seen"):
+				_tutorial_system.notify_dissatisfaction_seen()
+		return
+
 	if event != RunEventRes.Type.STATE_CHANGED:
 		return
+
 	var data: Dictionary = payload
 	var to_state: int = int(data.get("to", -1))
 	if to_state == RunStateEnumRes.State.CombatPhase:
 		_combat_timer = RunManager.get_current_wave_duration()
+		if RunManager.run_state.wave_index == 1:
+			if _wave_spawner.has_method("start_wave"):
+				_wave_spawner.start_wave(1)
+			if _tutorial_system.has_method("show_dissatisfaction_prompt"):
+				_tutorial_system.show_dissatisfaction_prompt()
 	elif to_state == RunStateEnumRes.State.PausePhase:
+		if _wave_spawner.has_method("stop_wave"):
+			_wave_spawner.stop_wave()
 		if _pause_panel.has_method("refresh_dogecoin"):
 			_pause_panel.refresh_dogecoin()
+		_handle_pause_entry()
 	elif to_state == RunStateEnumRes.State.CardPickPhase:
 		call_deferred("_complete_card_pick_stub")
+
 	_apply_phase_ui(to_state)
 	_update_status()
+
+
+func _handle_pause_entry() -> void:
+	if RunManager.get_state() != RunStateEnumRes.State.PausePhase:
+		return
+	var wave := RunManager.run_state.wave_index
+	if wave == 0:
+		if _tutorial_system.has_method("start_prep_tutorial"):
+			_tutorial_system.start_prep_tutorial()
+		return
+	if wave > 0 and wave < GameConstantsRes.MAX_COMBAT_WAVES:
+		call_deferred("_start_combat_if_ready")
+
+
+func _start_combat_if_ready() -> void:
+	if RunManager.get_state() != RunStateEnumRes.State.PausePhase:
+		return
+	if RunManager.run_state.wave_index == 0 and _tutorial_system.has_method("is_prep_complete"):
+		if not _tutorial_system.is_prep_complete():
+			return
+	if not RunManager.begin_combat_wave():
+		push_error("RunRoot: failed to begin combat wave")
 
 
 func _complete_card_pick_stub() -> void:
@@ -99,9 +143,13 @@ func _update_status() -> void:
 				_combat_timer,
 				GameConstantsRes.MAX_COMBAT_WAVES
 			)
-	_status_label.text = "RunRoot — %s | Wave %d/%d%s" % [
+	var spawn_text := ""
+	if _wave_spawner.has_method("get_spawned_count"):
+		spawn_text = " | Apes: %d" % _wave_spawner.get_spawned_count()
+	_status_label.text = "RunRoot — %s | Wave %d/%d%s%s" % [
 		state_name,
 		wave,
 		GameConstantsRes.MAX_COMBAT_WAVES,
 		timer_text,
+		spawn_text,
 	]

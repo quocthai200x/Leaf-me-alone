@@ -107,3 +107,26 @@ text = "CARE"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
 text = "Water / Fertilize placeholder"
+
+[node name="TutorialActions" type="VBoxContainer" parent="Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TutorialHeader" type="Label" parent="Content/TutorialActions"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
+theme_override_font_sizes/font_size = 12
+text = "TUTORIAL (WAVE 1)"
+
+[node name="PlacePeanutButton" type="Button" parent="Content/TutorialActions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Place Peanut (Ð20)"
+
+[node name="WaterPlantButton" type="Button" parent="Content/TutorialActions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Water Plant"

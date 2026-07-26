@@ -1,0 +1,14 @@
+[
+  {
+    "wave_number": 1,
+    "tutorial": true,
+    "spawns": [
+      {
+        "ape_id": "saw_ape",
+        "count": 8,
+        "interval_sec": 2.5,
+        "initial_delay_sec": 4.0
+      }
+    ]
+  }
+]

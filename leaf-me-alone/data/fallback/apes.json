@@ -1,5 +1,12 @@
 [
   {
+    "id": "saw_ape",
+    "display_name": "Saw Ape",
+    "hp": 60,
+    "speed": 70,
+    "role": "saw"
+  },
+  {
     "id": "hr_ape",
     "display_name": "HR Ape",
     "hp": 80,
