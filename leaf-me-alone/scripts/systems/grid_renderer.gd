@@ -93,6 +93,32 @@ func _create_indicator(cell: Vector2i, state: Dictionary) -> void:
 		root.add_child(meter_fill)
 
 
+func play_flee_animation(cell: Vector2i) -> void:
+	var root := Control.new()
+	root.position = Vector2(cell.x * TILE_SIZE, cell.y * TILE_SIZE - 6)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.z_index = 20
+	_indicators.add_child(root)
+
+	var emoji := Label.new()
+	emoji.text = "😤"
+	emoji.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	emoji.add_theme_font_size_override("font_size", 10)
+	emoji.position = Vector2(-2, -10)
+	emoji.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(emoji)
+
+	await get_tree().create_timer(GameConstantsRes.get_flee_angry_phase_sec()).timeout
+	emoji.text = "🏃"
+
+	var tween := create_tween()
+	var run_sec := GameConstantsRes.get_flee_run_phase_sec()
+	tween.tween_property(root, "position:x", root.position.x + TILE_SIZE * 2, run_sec)
+	tween.parallel().tween_property(root, "modulate:a", 0.0, run_sec)
+	await tween.finished
+	root.queue_free()
+
+
 func _build_greybox_tileset() -> void:
 	var image := Image.create(TILE_SIZE * 5, TILE_SIZE, false, Image.FORMAT_RGBA8)
 	_fill_tile_color(image, 0, Color(0.55, 0.22, 0.18)) # RED soil

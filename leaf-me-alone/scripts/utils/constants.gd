@@ -25,6 +25,13 @@ const SENSITIVE_FLEE_THRESHOLD := 75
 const HR_FLEE_THRESHOLD := 50
 const HR_MODIFIER_DEFAULT_RADIUS_TILES := 3
 
+# Flee sequence timing (Story 3.4)
+const FLEE_ANGRY_PHASE_SEC := 0.35
+const FLEE_RUN_PHASE_SEC := 0.45
+const DEBUG_FLEE_ANGRY_PHASE_SEC := 0.05
+const DEBUG_FLEE_RUN_PHASE_SEC := 0.05
+const FLEE_WHOOSH_BUS := &"SFX"
+
 # DESIGN.md dissatisfaction token #FF8C42 (UX-DR18)
 const DISSATISFACTION_COLOR := Color(1.0, 0.54902, 0.258824, 0.95)
 
@@ -43,3 +50,15 @@ static func get_dissatisfaction_combat_tick_sec() -> float:
 	if OS.is_debug_build():
 		return DEBUG_DISSATISFACTION_COMBAT_TICK_SEC
 	return DISSATISFACTION_COMBAT_TICK_SEC
+
+
+static func get_flee_angry_phase_sec() -> float:
+	if OS.is_debug_build():
+		return DEBUG_FLEE_ANGRY_PHASE_SEC
+	return FLEE_ANGRY_PHASE_SEC
+
+
+static func get_flee_run_phase_sec() -> float:
+	if OS.is_debug_build():
+		return DEBUG_FLEE_RUN_PHASE_SEC
+	return FLEE_RUN_PHASE_SEC

@@ -18,6 +18,7 @@ var _pan_enabled: bool = false
 
 
 func _ready() -> void:
+	add_to_group("map_view")
 	_grid_renderer = GridRendererScene.instantiate()
 	_grid_renderer.scale = Vector2(DISPLAY_SCALE, DISPLAY_SCALE)
 	add_child(_grid_renderer)
@@ -41,6 +42,11 @@ func sync_dissatisfaction_indicators(grid: GridDataRes) -> void:
 func set_combat_phase(active: bool) -> void:
 	if _grid_renderer.has_method("set_combat_phase"):
 		_grid_renderer.set_combat_phase(active)
+
+
+func play_flee_animation(cell: Vector2i) -> void:
+	if _grid_renderer.has_method("play_flee_animation"):
+		await _grid_renderer.play_flee_animation(cell)
 
 
 func set_visible_map_size(size: Vector2) -> void:

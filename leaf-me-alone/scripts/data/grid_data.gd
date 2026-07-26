@@ -169,6 +169,18 @@ func get_plant_species_id(pos: Vector2i) -> String:
 	return str(cell.get("plant_species_id", ""))
 
 
+func remove_plant_from_combat(pos: Vector2i) -> bool:
+	if not has_plant(pos):
+		return false
+	var cell: Dictionary = _cells[_index(pos)]
+	cell["occupied"] = false
+	cell["plant_species_id"] = ""
+	cell["plant_hp"] = 0
+	cell["plant_dissatisfaction"] = 0
+	_cells[_index(pos)] = cell
+	return true
+
+
 static func _movement_cost_for_soil(soil: int) -> float:
 	match soil:
 		SoilTypeRes.Type.RED:

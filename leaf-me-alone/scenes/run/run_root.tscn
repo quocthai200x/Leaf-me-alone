@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://run_root_scene"]
+[gd_scene load_steps=15 format=3 uid="uid://run_root_scene"]
 
 [ext_resource type="Script" path="res://scenes/run/run_root.gd" id="1_run_root"]
 [ext_resource type="PackedScene" uid="uid://pause_panel_shell" path="res://scenes/run/pause_panel.tscn" id="2_pause"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scripts/systems/care_system.gd" id="11_care"]
 [ext_resource type="Script" path="res://scripts/systems/plant_ability_system.gd" id="12_ability"]
 [ext_resource type="Script" path="res://scripts/systems/dissatisfaction_system.gd" id="13_dissat"]
+[ext_resource type="Script" path="res://scripts/systems/flee_sequence_system.gd" id="14_flee"]
 
 [node name="RunRoot" type="Node2D"]
 script = ExtResource("1_run_root")
@@ -31,6 +32,11 @@ script = ExtResource("12_ability")
 
 [node name="DissatisfactionSystem" type="Node" parent="."]
 script = ExtResource("13_dissat")
+
+[node name="FleeSequenceSystem" type="Node" parent="."]
+script = ExtResource("14_flee")
+
+[node name="WhooshPlayer" type="AudioStreamPlayer" parent="FleeSequenceSystem"]
 
 [node name="MapView" parent="." instance=ExtResource("4_map")]
 unique_name_in_owner = true

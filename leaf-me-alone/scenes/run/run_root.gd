@@ -19,6 +19,7 @@ const COMBAT_VISIBLE_MAP_WIDTH := 1920.0
 @onready var _tutorial_prompt: Control = %TutorialPrompt
 @onready var _tutorial_system: Node = $TutorialSystem
 @onready var _wave_spawner: Node = $WaveSpawner
+@onready var _dissatisfaction_system: Node = $DissatisfactionSystem
 
 var _combat_timer: float = 0.0
 
@@ -47,8 +48,16 @@ func _process(delta: float) -> void:
 		return
 	_combat_timer -= delta
 	if _combat_timer <= 0.0:
+		if _get_active_flee_count() > 0:
+			return
 		RunManager.on_combat_timer_expired()
 	_update_status()
+
+
+func _get_active_flee_count() -> int:
+	if _dissatisfaction_system != null and "active_flee_count" in _dissatisfaction_system:
+		return int(_dissatisfaction_system.active_flee_count)
+	return 0
 
 
 func _on_run_event(event: int, payload: Variant) -> void:
