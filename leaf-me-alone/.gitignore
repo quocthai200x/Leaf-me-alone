@@ -17,3 +17,6 @@ build/
 # System/tooling
 .DS_Store
 Thumbs.db
+
+# GdUnit4 test reports
+reports/

@@ -1,0 +1,6 @@
+{
+  "master_seed": 12345,
+  "expected_layout_hash": "-547136998502117795",
+  "expected_red_soil_count": 143,
+  "wave_1_combat_end_state": "PausePhase"
+}
