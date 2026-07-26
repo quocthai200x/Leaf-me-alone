@@ -6,7 +6,6 @@ const GridRendererScene := preload("res://scenes/run/grid_renderer.tscn")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const GameConstantsRes := preload("res://scripts/utils/constants.gd")
-const TEST_SEED := 12345
 
 @onready var _status_label: Label = $UI/StatusLabel
 
@@ -24,13 +23,17 @@ func _ready() -> void:
 		_status_label.text = "Content load FAILED"
 		return
 
-	var grid := RunManager.start_run(TEST_SEED)
+	var grid := RunManager.grid_data
 	if grid == null:
-		_status_label.text = "Run start FAILED"
+		_status_label.text = "RunRoot — no active run (start from Main Menu)"
 		return
+
 	_grid_renderer.sync_from_grid_data(grid)
 	_update_status()
-	RunManager.begin_combat_wave()
+
+	if RunManager.get_state() == RunStateEnumRes.State.PausePhase:
+		if not RunManager.begin_combat_wave():
+			_status_label.text = "RunRoot — failed to begin wave 1"
 
 
 func _process(delta: float) -> void:
