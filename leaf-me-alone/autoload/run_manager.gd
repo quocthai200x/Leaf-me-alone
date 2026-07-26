@@ -2,12 +2,22 @@ extends Node
 ## Events emitted: STATE_CHANGED (via EventBus)
 ## Events listened: none
 
+const GridDataRes := preload("res://scripts/data/grid_data.gd")
+
 var _state: int = RunStateEnum.State.MainMenu
 var run_state: RunState = RunState.new()
+var grid_data: GridDataRes
 
 
 func get_state() -> int:
 	return _state
+
+
+func start_run(seed_value: int) -> GridDataRes:
+	run_state.init_from_seed(seed_value)
+	grid_data = GridDataRes.new()
+	grid_data.generate_from_seed(run_state.master_seed)
+	return grid_data
 
 
 func can_transition_to(_to_state: int) -> bool:

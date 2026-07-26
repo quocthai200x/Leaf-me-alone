@@ -189,7 +189,7 @@ func _load_json_objects_from_dir(dir_path: String) -> Array:
 	while file_name != "":
 		if not dir.current_is_dir() and file_name.ends_with(".json"):
 			var file_path := dir_path.path_join(file_name)
-			var data := _parse_json_file(file_path)
+			var data: Variant = _parse_json_file(file_path)
 			if typeof(data) == TYPE_DICTIONARY:
 				entries.append(data)
 		file_name = dir.get_next()
@@ -198,7 +198,7 @@ func _load_json_objects_from_dir(dir_path: String) -> Array:
 
 
 func _load_json_array(path: String) -> Array:
-	var data := _parse_json_file(path)
+	var data: Variant = _parse_json_file(path)
 	if data == null:
 		return []
 	if typeof(data) != TYPE_ARRAY:
