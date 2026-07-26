@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaf Me Alone — Card Pick Mock</title>
+  <style>
+    /*
+     * Spine: DESIGN.md (panel-card, card-pick-stat/soil accents, Elevation scrim)
+     *        EXPERIENCE.md (Card Pick interrupt, Component Patterns card pick, Flow 2 step 4)
+     */
+    :root {
+      --primary: #7BC950;
+      --surface: #1A2F1A;
+      --surface-alt: #243824;
+      --surface-panel: #2D4A2D;
+      --text: #F5F0E6;
+      --muted: #A8B5A0;
+      --border: #4A6B4A;
+      --card-stat: #74B9FF;
+      --card-soil: #A29BFE;
+      --secondary: #FFB347;
+      --radius-lg: 20px;
+      --shadow: 0 8px 0 rgba(0,0,0,0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d160d;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+    }
+    .browser-frame {
+      width: 1280px;
+      max-width: 100%;
+      border: 3px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .titlebar { background: #2a2a2a; padding: 8px 16px; }
+    .screen {
+      aspect-ratio: 16/9;
+      position: relative;
+      background: #3d2818;
+    }
+    .scrim {
+      position: absolute; inset: 0;
+      background: rgba(26,47,26,0.85);
+    }
+    .map-blur {
+      position: absolute; inset: 0;
+      opacity: 0.3;
+      background: repeating-linear-gradient(45deg, #4a3020, #4a3020 20px, #5a4030 20px, #5a4030 40px);
+    }
+    .overlay {
+      position: absolute; inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      z-index: 5;
+    }
+    .heading {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .sub {
+      color: var(--muted);
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+    .cards {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .card {
+      width: 280px;
+      max-width: 100%;
+      background: var(--surface-alt);
+      border: 3px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: var(--primary);
+    }
+    .card.selected {
+      border-color: var(--secondary);
+      transform: translateY(-8px) scale(1.02);
+    }
+    .card-accent { height: 8px; }
+    .card-accent.stat { background: var(--card-stat); }
+    .card-accent.soil { background: var(--card-soil); }
+    .card-body { padding: 20px; }
+    .card-type {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .card-emoji {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+    .clan-badge {
+      display: inline-block;
+      background: var(--surface-panel);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      margin-top: 12px;
+      color: var(--card-stat);
+    }
+    .hint {
+      margin-top: 24px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="browser-frame">
+    <div class="titlebar"><span style="color:#888;font-size:12px;">Card Pick — After Wave 2</span></div>
+    <div class="screen">
+      <div class="map-blur"></div>
+      <div class="scrim"></div>
+      <div class="overlay">
+        <div class="heading">Pick Your Upgrade</div>
+        <div class="sub">Wave 2 cleared. Choose 1 of 3 — Red Soil clan only.</div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-accent stat"></div>
+            <div class="card-body">
+              <div class="card-emoji">⚔️</div>
+              <div class="card-type">Stat Card</div>
+              <div class="card-title">Cashew Fury</div>
+              <div class="card-desc">+15% ATK for Red Soil clan plants this run.</div>
+              <span class="clan-badge">🌰 Red Soil</span>
+            </div>
+          </div>
+          <div class="card selected">
+            <div class="card-accent soil"></div>
+            <div class="card-body">
+              <div class="card-emoji">🏖️</div>
+              <div class="card-type">Soil Card</div>
+              <div class="card-title">Coastal Deposit</div>
+              <div class="card-desc">Terraform 3 tiles to Sand soil permanently this run.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-accent stat"></div>
+            <div class="card-body">
+              <div class="card-emoji">🛡️</div>
+              <div class="card-type">Stat Card</div>
+              <div class="card-title">Teak Resolve</div>
+              <div class="card-desc">+20% dissatisfaction resist for Red Soil clan.</div>
+              <span class="clan-badge">🪵 Red Soil</span>
+            </div>
+          </div>
+        </div>
+        <div class="hint">Click a card to commit — no undo.</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

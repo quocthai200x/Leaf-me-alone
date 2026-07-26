@@ -1,0 +1,16 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
+*.pem
+credentials.json
+
+# User-specific BMAD config
+*.user.toml

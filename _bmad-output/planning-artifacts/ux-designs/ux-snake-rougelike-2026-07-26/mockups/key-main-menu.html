@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaf Me Alone — Main Menu Mock</title>
+  <style>
+    /*
+     * Spine: DESIGN.md (Brand, Colors, Typography, Components.button-primary/secondary, currency-carbon)
+     *        EXPERIENCE.md (IA Pre-run, Voice, State: Main Menu idle, Flow 1 step 1)
+     */
+    :root {
+      --primary: #7BC950;
+      --primary-hover: #5FA838;
+      --secondary: #FFB347;
+      --surface: #1A2F1A;
+      --surface-alt: #243824;
+      --surface-panel: #2D4A2D;
+      --text: #F5F0E6;
+      --muted: #A8B5A0;
+      --border: #4A6B4A;
+      --carbon: #6BCBAA;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --shadow: 0 8px 0 rgba(0,0,0,0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d160d;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+    .browser-frame {
+      width: 1280px;
+      max-width: 100%;
+      border: 3px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .titlebar {
+      background: #2a2a2a;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .screen {
+      aspect-ratio: 16/9;
+      background: linear-gradient(180deg, #2a5030 0%, var(--surface) 40%, #142014 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-leaves {
+      position: absolute;
+      inset: 0;
+      opacity: 0.15;
+      background-image:
+        radial-gradient(circle at 20% 80%, var(--primary) 0%, transparent 8%),
+        radial-gradient(circle at 80% 20%, var(--secondary) 0%, transparent 6%),
+        radial-gradient(circle at 60% 60%, #3d6b3d 0%, transparent 12%);
+    }
+    .cc-header {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: var(--surface-panel);
+      border: 2px solid var(--border);
+      border-radius: 9999px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: Consolas, monospace;
+      font-weight: 600;
+      color: var(--carbon);
+      box-shadow: var(--shadow);
+    }
+    .cc-label { color: var(--muted); font-family: "Segoe UI", sans-serif; font-size: 0.75rem; font-weight: 600; }
+    .menu-col {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+    .logo {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--text);
+      text-shadow: 3px 3px 0 var(--primary), 6px 6px 0 rgba(0,0,0,0.3);
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+    .tagline {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 32px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px 24px;
+      margin-bottom: 12px;
+      border-radius: var(--radius-md);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-align: center;
+      transition: transform 0.1s;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-size: 1.4rem;
+      padding: 18px;
+    }
+    .btn-primary:hover { background: var(--primary-hover); transform: scale(1.02); }
+    .btn-secondary {
+      background: var(--surface-alt);
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--primary); }
+    .btn-row { display: flex; gap: 12px; }
+    .btn-row .btn { flex: 1; margin-bottom: 0; font-size: 0.95rem; padding: 12px; }
+    .chibi-ape {
+      position: absolute;
+      bottom: 40px;
+      right: 80px;
+      font-size: 5rem;
+      filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.3));
+    }
+    .chibi-tree {
+      position: absolute;
+      bottom: 30px;
+      left: 60px;
+      font-size: 4.5rem;
+      filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.3));
+    }
+  </style>
+</head>
+<body>
+  <div class="browser-frame">
+    <div class="titlebar">
+      <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+      <span style="color:#888;font-size:12px;margin-left:8px;">Leaf Me Alone</span>
+    </div>
+    <div class="screen">
+      <div class="bg-leaves"></div>
+      <div class="cc-header">
+        <span class="cc-label">CC</span>
+        <span>220</span>
+      </div>
+      <div class="chibi-tree">🌳</div>
+      <div class="chibi-ape">🦍</div>
+      <div class="menu-col">
+        <div class="logo">Leaf Me Alone</div>
+        <div class="tagline">"Who's righteous? No one — only the strong survive."</div>
+        <button class="btn btn-primary">PLAY</button>
+        <button class="btn btn-secondary">Carbon Shop</button>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn btn-secondary">Achievements</button>
+          <button class="btn btn-secondary">Settings</button>
+        </div>
+        <button class="btn btn-secondary" style="margin-top:12px;font-size:0.85rem;color:var(--muted)">Quit</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaf Me Alone — Combat HUD Mock</title>
+  <style>
+    /*
+     * Spine: DESIGN.md (HUD layout, dissatisfaction-emoji, health-bar-core, currency-dogecoin)
+     *        EXPERIENCE.md (Combat active, Flee triggered, Mass flee/HR moment, HUD diegesis table)
+     * Alternate state: flee moment (right column)
+     */
+    :root {
+      --primary: #7BC950;
+      --surface: #1A2F1A;
+      --surface-alt: #243824;
+      --surface-panel: #2D4A2D;
+      --text: #F5F0E6;
+      --muted: #A8B5A0;
+      --border: #4A6B4A;
+      --dogecoin: #C2A633;
+      --dissatisfaction: #FF8C42;
+      --flee: #FF4757;
+      --danger: #FF6B6B;
+      --secondary: #FFB347;
+      --soil-red: #C45C3E;
+      --shadow: 0 8px 0 rgba(0,0,0,0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d160d;
+      min-height: 100vh;
+      padding: 24px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+    }
+    h1 { text-align: center; font-size: 1rem; color: var(--muted); margin-bottom: 16px; font-weight: 500; }
+    .compare { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .frame-wrap { flex: 1; min-width: 560px; max-width: 620px; }
+    .frame-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; text-align: center; }
+    .screen {
+      aspect-ratio: 16/9;
+      background: #4a3020;
+      position: relative;
+      border: 3px solid #333;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .map-grid {
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.06) 40px, rgba(0,0,0,0.06) 41px),
+        repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.06) 40px, rgba(0,0,0,0.06) 41px);
+      background-color: var(--soil-red);
+    }
+    .hud-chip {
+      position: absolute;
+      background: var(--surface-panel);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+    .hud-top-center { top: 24px; left: 50%; transform: translateX(-50%); }
+    .hud-top-right { top: 24px; right: 24px; font-family: Consolas, monospace; color: var(--dogecoin); }
+    .hud-bottom-left { bottom: 24px; left: 24px; min-width: 180px; }
+    .wave-banner {
+      position: absolute;
+      top: 80px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--secondary);
+      color: #1a1a1a;
+      padding: 8px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      z-index: 10;
+      box-shadow: var(--shadow);
+    }
+    .struct-row { display: flex; gap: 12px; margin-top: 6px; font-size: 0.75rem; }
+    .hp-mini { width: 48px; height: 6px; background: var(--surface-alt); border-radius: 9999px; margin-top: 2px; }
+    .hp-mini div { height: 100%; background: var(--primary); border-radius: 9999px; }
+    .unit { position: absolute; font-size: 2rem; z-index: 5; filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.4)); }
+    .emoji-above {
+      position: absolute;
+      font-size: 1.5rem;
+      z-index: 6;
+      animation: bounce 0.5s infinite alternate;
+    }
+    @keyframes bounce { to { transform: translateY(-4px); } }
+    .meter {
+      width: 32px; height: 4px;
+      background: var(--surface-alt);
+      border-radius: 9999px;
+      margin: 2px auto 0;
+      overflow: hidden;
+    }
+    .meter-fill { height: 100%; background: var(--dissatisfaction); }
+    .billboard {
+      position: absolute;
+      background: #fff;
+      color: #333;
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border: 2px solid #333;
+      border-radius: 4px;
+      transform: rotate(-5deg);
+    }
+    .flee-toast {
+      position: absolute;
+      bottom: 100px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface-panel);
+      border: 2px solid var(--flee);
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-family: "Comic Sans MS", cursive;
+      font-weight: 700;
+      font-size: 0.95rem;
+      z-index: 20;
+      box-shadow: var(--shadow);
+    }
+    .vignette {
+      position: absolute; inset: 0;
+      box-shadow: inset 0 0 80px var(--flee);
+      pointer-events: none;
+      z-index: 15;
+      opacity: 0.4;
+    }
+    .flee-trail {
+      position: absolute;
+      font-size: 1.8rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <h1>Combat HUD — canonical + flee crisis alternate state</h1>
+  <div class="compare">
+    <div class="frame-wrap">
+      <div class="frame-label">Combat active — Wave 2 (HR + Saw apes)</div>
+      <div class="screen">
+        <div class="map-grid"></div>
+        <div class="hud-chip hud-top-center">⏱ 4:32 — Wave 2</div>
+        <div class="hud-chip hud-top-right">Ð 142</div>
+        <div class="wave-banner">🦍 HR Ape incoming!</div>
+        <div class="hud-chip hud-bottom-left">
+          🌳 Core · 🪹×3
+          <div class="struct-row">
+            <div><span style="color:var(--muted)">Core</span><div class="hp-mini"><div style="width:78%"></div></div></div>
+            <div><span style="color:var(--muted)">Nests</span><div class="hp-mini"><div style="width:100%"></div></div></div>
+          </div>
+        </div>
+        <div class="unit" style="top:35%;left:25%">🌳</div>
+        <div class="unit" style="top:45%;left:40%">🪵</div>
+        <div class="unit" style="top:50%;left:55%">🥜</div>
+        <div class="unit" style="top:42%;left:65%">🌰</div>
+        <div class="emoji-above" style="top:38%;left:52%">
+          😤
+          <div class="meter"><div class="meter-fill" style="width:70%"></div></div>
+        </div>
+        <div class="unit" style="top:30%;left:70%">🦍</div>
+        <div class="unit" style="top:55%;left:20%">🦍</div>
+        <div class="billboard" style="top:48%;left:72%">CIVILIZE<br>THIS ISLAND</div>
+      </div>
+    </div>
+    <div class="frame-wrap">
+      <div class="frame-label">Flee triggered — clip moment</div>
+      <div class="screen">
+        <div class="map-grid"></div>
+        <div class="vignette"></div>
+        <div class="hud-chip hud-top-center">⏱ 3:08 — Wave 2</div>
+        <div class="hud-chip hud-top-right">Ð 158</div>
+        <div class="hud-chip hud-bottom-left">
+          🌳 Core · 🪹×3
+          <div class="struct-row">
+            <div><span style="color:var(--muted)">Core</span><div class="hp-mini"><div style="width:78%"></div></div></div>
+          </div>
+        </div>
+        <div class="unit" style="top:45%;left:40%">🪵</div>
+        <div class="emoji-above" style="top:32%;left:58%;font-size:2rem">🏃</div>
+        <div class="flee-trail" style="top:38%;left:62%">💨💨💨</div>
+        <div class="flee-toast">Teak has resigned effective immediately.</div>
+        <div class="unit" style="top:35%;left:68%">🦍</div>
+        <div style="position:absolute;top:35%;left:68%;font-size:0.7rem;background:#fff;color:#333;padding:2px 6px;border-radius:4px">HR</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

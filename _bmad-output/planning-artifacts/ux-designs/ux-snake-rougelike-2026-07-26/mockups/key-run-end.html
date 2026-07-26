@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaf Me Alone — Run End Mock</title>
+  <style>
+    /*
+     * Spine: DESIGN.md (Run End summary, typography.display/numeric, currency-carbon)
+     *        EXPERIENCE.md (Run win/loss states, Voice, Flow 4 climax, Component run-end-summary)
+     * Shows win + loss as two columns
+     */
+    :root {
+      --primary: #7BC950;
+      --surface: #1A2F1A;
+      --surface-alt: #243824;
+      --surface-panel: #2D4A2D;
+      --text: #F5F0E6;
+      --muted: #A8B5A0;
+      --border: #4A6B4A;
+      --carbon: #6BCBAA;
+      --danger: #FF6B6B;
+      --radius-lg: 20px;
+      --shadow: 0 8px 0 rgba(0,0,0,0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d160d;
+      min-height: 100vh;
+      padding: 24px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+    }
+    h1 { text-align: center; font-size: 1rem; color: var(--muted); margin-bottom: 16px; font-weight: 500; }
+    .compare { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .frame-wrap { flex: 1; min-width: 480px; max-width: 560px; }
+    .frame-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; text-align: center; }
+    .screen {
+      aspect-ratio: 16/9;
+      background: linear-gradient(180deg, #1a301a, var(--surface));
+      border: 3px solid #333;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .screen.loss-bg {
+      background: linear-gradient(180deg, #301a1a, var(--surface));
+    }
+    .summary {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface-panel);
+      border: 3px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .outcome {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .outcome.win { color: var(--primary); }
+    .outcome.loss { color: var(--danger); }
+    .flavor {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+    .stats {
+      background: var(--surface-alt);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-row .val { font-family: Consolas, monospace; font-weight: 600; }
+    .stat-row .val.cc { color: var(--carbon); }
+    .seed {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      margin-bottom: 20px;
+    }
+    .btn-continue {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      border: none;
+      border-radius: 12px;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .loss .btn-continue { background: var(--surface-alt); border: 2px solid var(--border); }
+    .emoji-big { font-size: 3rem; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Run End — win and loss states</h1>
+  <div class="compare">
+    <div class="frame-wrap">
+      <div class="frame-label">Run Win — Flow 4 / UJ-5</div>
+      <div class="screen">
+        <div class="summary">
+          <div class="emoji-big">🎉</div>
+          <div class="outcome win">VICTORY</div>
+          <div class="flavor">The jungle survives another quarterly review.</div>
+          <div class="stats">
+            <div class="stat-row"><span>Waves cleared</span><span class="val">5 / 5</span></div>
+            <div class="stat-row"><span>Director</span><span class="val">Defeated</span></div>
+            <div class="stat-row"><span>Carbon Credit</span><span class="val cc">+128 CC</span></div>
+          </div>
+          <div class="seed">Run seed: 0x7F3A2B91</div>
+          <button class="btn-continue">Continue</button>
+        </div>
+      </div>
+    </div>
+    <div class="frame-wrap">
+      <div class="frame-label">Run Loss — Forest Core destroyed</div>
+      <div class="screen loss-bg">
+        <div class="summary loss">
+          <div class="emoji-big">💀</div>
+          <div class="outcome loss">DEFEAT</div>
+          <div class="flavor">Forest Core terminated. HR sends condolences.</div>
+          <div class="stats">
+            <div class="stat-row"><span>Waves cleared</span><span class="val">3 / 5</span></div>
+            <div class="stat-row"><span>Plants fled</span><span class="val">7</span></div>
+            <div class="stat-row"><span>Carbon Credit</span><span class="val cc">+65 CC</span></div>
+          </div>
+          <div class="seed">Run seed: 0xA1B2C3D4</div>
+          <button class="btn-continue">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

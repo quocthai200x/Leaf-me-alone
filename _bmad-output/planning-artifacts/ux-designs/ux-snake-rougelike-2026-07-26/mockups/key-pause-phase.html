@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaf Me Alone — Pause Phase Mock</title>
+  <style>
+    /*
+     * Spine: DESIGN.md (panel-pause, plant-catalog-cell, currency-dogecoin, soil-red, Layout Pause 65/35)
+     *        EXPERIENCE.md (Pause Phase state, Component Patterns catalog/care/weather, Flow 1 steps 3-4)
+     */
+    :root {
+      --primary: #7BC950;
+      --secondary: #FFB347;
+      --surface: #1A2F1A;
+      --surface-alt: #243824;
+      --surface-panel: #2D4A2D;
+      --text: #F5F0E6;
+      --muted: #A8B5A0;
+      --border: #4A6B4A;
+      --dogecoin: #C2A633;
+      --warning: #FFD93D;
+      --soil-red: #C45C3E;
+      --danger: #FF6B6B;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --shadow: 0 8px 0 rgba(0,0,0,0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d160d;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+    }
+    .browser-frame {
+      width: 1280px;
+      max-width: 100%;
+      border: 3px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .titlebar { background: #2a2a2a; padding: 8px 16px; }
+    .screen {
+      aspect-ratio: 16/9;
+      display: flex;
+      position: relative;
+      background: #1a301a;
+    }
+    .map-area {
+      flex: 1;
+      position: relative;
+      background:
+        linear-gradient(rgba(26,47,26,0.6), rgba(26,47,26,0.6)),
+        repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(0,0,0,0.08) 48px, rgba(0,0,0,0.08) 49px),
+        repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(0,0,0,0.08) 48px, rgba(0,0,0,0.08) 49px);
+      background-color: #3d2818;
+    }
+    .tile { position: absolute; width: 48px; height: 48px; border-radius: 4px; }
+    .core {
+      top: 45%; left: 42%;
+      width: 64px; height: 64px;
+      background: radial-gradient(circle, var(--primary) 30%, #2d5a2d 70%);
+      border: 3px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+    }
+    .plant-on-map {
+      width: 40px; height: 40px;
+      background: var(--surface-alt);
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+    .tutorial {
+      position: absolute;
+      bottom: 120px; left: 28%;
+      background: var(--surface-panel);
+      border: 2px solid var(--warning);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      max-width: 260px;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow);
+    }
+    .tutorial::before {
+      content: "▼";
+      position: absolute;
+      bottom: -18px; left: 24px;
+      color: var(--warning);
+      font-size: 1.2rem;
+    }
+    .pause-panel {
+      width: 380px;
+      min-width: 380px;
+      background: var(--surface-panel);
+      border-left: 3px solid var(--border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: -8px 0 0 rgba(0,0,0,0.2);
+      overflow-y: auto;
+    }
+    .panel-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .currency-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-alt);
+      border: 2px solid var(--border);
+      border-radius: 9999px;
+      padding: 8px 14px;
+      font-family: Consolas, monospace;
+      font-weight: 600;
+      color: var(--dogecoin);
+    }
+    .currency-row span.label { color: var(--muted); font-family: "Segoe UI", sans-serif; font-size: 0.75rem; }
+    .weather {
+      background: var(--surface-alt);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-size: 0.85rem;
+    }
+    .weather strong { display: block; margin-bottom: 4px; }
+    .weather .muted { color: var(--muted); font-size: 0.8rem; }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .catalog {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .catalog-cell {
+      aspect-ratio: 1;
+      background: var(--surface-alt);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.6rem;
+      position: relative;
+    }
+    .catalog-cell.selected {
+      border: 3px solid var(--secondary);
+      box-shadow: 0 0 0 2px rgba(255,179,71,0.3);
+    }
+    .catalog-cell .cost {
+      font-size: 0.65rem;
+      font-family: Consolas, monospace;
+      color: var(--dogecoin);
+      margin-top: 2px;
+    }
+    .catalog-cell .role {
+      position: absolute;
+      top: 4px; right: 4px;
+      font-size: 0.55rem;
+      background: var(--border);
+      padding: 1px 4px;
+      border-radius: 4px;
+      color: var(--muted);
+    }
+    .care-row { display: flex; gap: 8px; }
+    .care-btn {
+      flex: 1;
+      padding: 10px;
+      background: var(--surface-alt);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .care-btn:hover { border-color: var(--primary); }
+    .care-btn .cost { display: block; font-size: 0.7rem; color: var(--dogecoin); font-family: Consolas, monospace; margin-top: 2px; }
+    .structures {
+      display: flex;
+      gap: 8px;
+      font-size: 0.75rem;
+    }
+    .struct-chip {
+      flex: 1;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+    }
+    .hp-bar {
+      height: 6px;
+      background: var(--surface);
+      border-radius: 9999px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    .hp-fill { height: 100%; background: var(--primary); border-radius: 9999px; }
+    .hp-fill.low { background: var(--danger); }
+    .wave-badge {
+      position: absolute;
+      top: 16px; left: 16px;
+      background: var(--surface-panel);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+    }
+  </style>
+</head>
+<body>
+  <div class="browser-frame">
+    <div class="titlebar"><span style="color:#888;font-size:12px;">Pause Phase — Wave 1 Prep</span></div>
+    <div class="screen">
+      <div class="map-area">
+        <div class="wave-badge">⏸ PAUSE — Wave 1</div>
+        <div class="core">🌳</div>
+        <div class="plant-on-map" style="top:52%;left:38%">🥜</div>
+        <div class="plant-on-map" style="top:48%;left:52%">🌰</div>
+        <div class="tutorial">Water your moody employees before the apes arrive.</div>
+      </div>
+      <aside class="pause-panel">
+        <div class="panel-title">Prep Phase</div>
+        <div class="currency-row">
+          <span class="label">Ð</span> Dogecoin <span style="margin-left:auto">85</span>
+        </div>
+        <div class="weather">
+          <strong>☀️ Harsh Sun — Wave 1</strong>
+          <span class="muted">Next: 🌧 Rain (Wave 2). Water-lovers may get grumpy.</span>
+        </div>
+        <div class="structures">
+          <div class="struct-chip">🌳 Core<div class="hp-bar"><div class="hp-fill" style="width:92%"></div></div></div>
+          <div class="struct-chip">🪹 Nest ×3<div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div></div>
+        </div>
+        <div class="section-label">Plant Catalog</div>
+        <div class="catalog">
+          <div class="catalog-cell selected">
+            <span class="role">Buff</span>🥜<span class="cost">Ð20</span>
+          </div>
+          <div class="catalog-cell">
+            <span class="role">ATK</span>🌰<span class="cost">Ð35</span>
+          </div>
+          <div class="catalog-cell">
+            <span class="role">DEF</span>🪵<span class="cost">Ð50</span>
+          </div>
+        </div>
+        <div class="section-label">Care — Peanut selected</div>
+        <div class="care-row">
+          <button class="care-btn">💧 Water<span class="cost">Ð5</span></button>
+          <button class="care-btn">🌱 Fertilize<span class="cost">Ð10</span></button>
+        </div>
+        <button style="margin-top:auto;padding:14px;background:var(--primary);border:none;border-radius:12px;color:var(--text);font-weight:700;font-size:1rem;cursor:pointer;box-shadow:var(--shadow)">
+          ▶ Start Wave 1
+        </button>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
