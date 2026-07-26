@@ -106,10 +106,25 @@ func reset() -> void:
 		push_warning("RunManager.reset() is only callable from MainMenu or RunEnd")
 		return
 	var old_state := _state
-	run_state = RunState.new()
-	grid_data = null
-	_state = RunStateEnum.State.MainMenu
+	_apply_main_menu_state()
 	EventBus.emit_run_event(
 		RunEvent.Type.STATE_CHANGED,
 		{"from": old_state, "to": _state}
 	)
+
+
+func enter_main_menu() -> void:
+	## Force clean MainMenu state when main_menu.tscn loads (e.g. after editor run or hub return).
+	var old_state := _state
+	_apply_main_menu_state()
+	if old_state != _state:
+		EventBus.emit_run_event(
+			RunEvent.Type.STATE_CHANGED,
+			{"from": old_state, "to": _state}
+		)
+
+
+func _apply_main_menu_state() -> void:
+	run_state = RunState.new()
+	grid_data = null
+	_state = RunStateEnum.State.MainMenu

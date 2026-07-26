@@ -6,6 +6,7 @@ const GridRendererScene := preload("res://scenes/run/grid_renderer.tscn")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const GameConstantsRes := preload("res://scripts/utils/constants.gd")
+const MAIN_MENU_SCENE := "res://scenes/main/main_menu.tscn"
 
 @onready var _status_label: Label = $UI/StatusLabel
 
@@ -33,7 +34,9 @@ func _ready() -> void:
 
 	if RunManager.get_state() == RunStateEnumRes.State.PausePhase:
 		if not RunManager.begin_combat_wave():
-			_status_label.text = "RunRoot — failed to begin wave 1"
+			push_error("RunRoot: failed to begin wave 1")
+			RunManager.enter_main_menu()
+			get_tree().change_scene_to_file(MAIN_MENU_SCENE)
 
 
 func _process(delta: float) -> void:

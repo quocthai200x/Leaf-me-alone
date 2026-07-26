@@ -10,25 +10,43 @@ const LOADING_QUIP_TEXT := "Generating island… HR not included."
 
 @onready var _play_button: Button = %PlayButton
 @onready var _quit_button: Button = %QuitButton
+@onready var _status_label: Label = %StatusLabel
 @onready var _loading_overlay: ColorRect = %LoadingOverlay
 @onready var _loading_biome_label: Label = %LoadingBiomeLabel
 @onready var _loading_quip_label: Label = %LoadingQuipLabel
 
 
 func _ready() -> void:
-	if RunManager.get_state() != RunStateEnumRes.State.MainMenu:
-		RunManager.reset()
+	RunManager.enter_main_menu()
+	_play_button.text = tr("PLAY")
+	_quit_button.text = tr("QUIT")
+	$MenuColumn/TitleLabel.text = tr("Leaf Me Alone")
+	$MenuColumn/TaglineLabel.text = tr("Who's righteous? No one — only the strong survive.")
 	_play_button.pressed.connect(_on_play_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
 	_loading_overlay.visible = false
+	_update_boot_status()
+
+
+func _update_boot_status() -> void:
+	if not ContentRegistry.is_loaded():
+		_status_label.text = tr("Content load failed — cannot start a run")
+		_play_button.disabled = true
+	else:
+		_status_label.text = ""
 
 
 func _on_play_pressed() -> void:
-	if not RunManager.can_transition_to(RunStateEnumRes.State.RunStart):
-		push_warning("MainMenu: PLAY blocked from state %s" % RunManager.get_state())
+	if not ContentRegistry.is_loaded():
+		_status_label.text = tr("Content load failed — cannot start a run")
 		return
 
-	_set_menu_interactive(false)
+	if not RunManager.can_transition_to(RunStateEnumRes.State.RunStart):
+		push_warning("MainMenu: PLAY blocked from state %s" % RunManager.get_state())
+		_status_label.text = tr("Cannot start run from current state")
+		return
+
+	_play_button.disabled = true
 	_show_loading_overlay()
 
 	await get_tree().process_frame
@@ -41,11 +59,14 @@ func _on_play_pressed() -> void:
 	if grid == null:
 		push_error("MainMenu: RunManager.start_run failed")
 		_hide_loading_overlay()
-		_set_menu_interactive(true)
+		_play_button.disabled = false
 		return
 
 	if RunManager.run_state.dogecoin != 0:
 		push_error("MainMenu: Dogecoin must reset to 0 at run start")
+		_hide_loading_overlay()
+		_play_button.disabled = false
+		return
 
 	get_tree().change_scene_to_file(RUN_ROOT_SCENE)
 
@@ -62,8 +83,3 @@ func _show_loading_overlay() -> void:
 
 func _hide_loading_overlay() -> void:
 	_loading_overlay.visible = false
-
-
-func _set_menu_interactive(enabled: bool) -> void:
-	_play_button.disabled = not enabled
-	_quit_button.disabled = not enabled
