@@ -1,5 +1,5 @@
 extends Node
-## Multi-cause dissatisfaction accumulation (Story 3.1). Flee deferred to Story 3.3.
+## Multi-cause dissatisfaction + flee threshold detection (Stories 3.1, 3.3).
 
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
@@ -7,9 +7,15 @@ const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 const DissatisfactionCauseLogicRes := preload(
 	"res://scripts/systems/dissatisfaction_cause_logic.gd"
 )
+const DissatisfactionThresholdRes := preload(
+	"res://scripts/systems/dissatisfaction_threshold.gd"
+)
 
 var _pause_care: Dictionary = {}
 var _combat_tick_timer: float = 0.0
+var _hr_modifiers: Array = []
+var _flee_pending_cells: Dictionary = {}
+var active_flee_count: int = 0
 
 
 func _ready() -> void:
@@ -25,6 +31,21 @@ func _process(delta: float) -> void:
 		return
 	_combat_tick_timer = GameConstantsRes.get_dissatisfaction_combat_tick_sec()
 	_apply_environmental_dissatisfaction()
+
+
+func register_hr_modifier(center: Vector2i, radius: int = -1) -> void:
+	var effective_radius := radius
+	if effective_radius < 0:
+		effective_radius = GameConstantsRes.HR_MODIFIER_DEFAULT_RADIUS_TILES
+	_hr_modifiers.append({"center": center, "radius": effective_radius})
+
+
+func clear_hr_modifiers() -> void:
+	_hr_modifiers.clear()
+
+
+func get_hr_modifiers() -> Array:
+	return _hr_modifiers.duplicate(true)
 
 
 func _on_run_event(event: int, payload: Variant) -> void:
@@ -98,6 +119,7 @@ func _apply_missed_care_penalties() -> void:
 		changed = true
 	if changed:
 		_emit_dissatisfaction_updated()
+	_check_flee_thresholds()
 
 
 func _apply_environmental_dissatisfaction() -> void:
@@ -122,6 +144,51 @@ func _apply_environmental_dissatisfaction() -> void:
 			changed = true
 	if changed:
 		_emit_dissatisfaction_updated()
+	_check_flee_thresholds()
+
+
+func _check_flee_thresholds() -> void:
+	if RunManager.get_state() != RunStateEnumRes.State.CombatPhase:
+		return
+	var grid := RunManager.grid_data
+	if grid == null:
+		return
+	for y in grid.height:
+		for x in grid.width:
+			var cell := Vector2i(x, y)
+			if not grid.has_plant(cell) or _flee_pending_cells.has(cell):
+				continue
+			var dissat := grid.get_plant_dissatisfaction(cell)
+			var species := ContentRegistry.get_species(grid.get_plant_species_id(cell))
+			var threshold := DissatisfactionThresholdRes.get_flee_threshold(
+				species, cell, _hr_modifiers
+			)
+			if DissatisfactionThresholdRes.should_flee(dissat, threshold):
+				trigger_flee(cell)
+
+
+func trigger_flee(cell: Vector2i) -> void:
+	var grid := RunManager.grid_data
+	if grid == null or not grid.has_plant(cell) or _flee_pending_cells.has(cell):
+		return
+	_flee_pending_cells[cell] = true
+	active_flee_count += 1
+	var species_id := grid.get_plant_species_id(cell)
+	EventBus.emit_run_event(
+		RunEventRes.Type.FLEE_TRIGGERED,
+		{
+			"cell": cell,
+			"species_id": species_id,
+			"dissatisfaction": grid.get_plant_dissatisfaction(cell),
+		}
+	)
+
+
+func notify_flee_completed(cell: Vector2i) -> void:
+	if not _flee_pending_cells.has(cell):
+		return
+	_flee_pending_cells.erase(cell)
+	active_flee_count = maxi(active_flee_count - 1, 0)
 
 
 func _emit_dissatisfaction_updated() -> void:

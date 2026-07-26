@@ -8,6 +8,7 @@
     "defense": 8,
     "preferred_soil": 0,
     "weather_preference": "tropical_sun",
+    "dissatisfaction_sensitive": true,
     "abilities": {
       "n_fixation": {
         "attack_buff_pct": 0.15,

@@ -67,7 +67,7 @@ development_status:
   epic-3: in-progress
   3-1-dissatisfactionsystem-and-multi-cause-tracking: done
   3-2-dissatisfaction-indicators-in-combat-hud: done
-  3-3-flee-threshold-and-hr-modifier-hook: backlog
+  3-3-flee-threshold-and-hr-modifier-hook: done
   3-4-flee-sequence-pattern-tier-0-usp: backlog
   3-5-depleted-tile-state-after-flee: backlog
   3-6-weather-stub-single-weather-type: backlog

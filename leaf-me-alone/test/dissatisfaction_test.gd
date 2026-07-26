@@ -11,6 +11,9 @@ const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 const DissatisfactionSystemScript := preload(
 	"res://scripts/systems/dissatisfaction_system.gd"
 )
+const DissatisfactionThresholdRes := preload(
+	"res://scripts/systems/dissatisfaction_threshold.gd"
+)
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 
@@ -101,6 +104,59 @@ func test_dissatisfaction_system_applies_missed_care_on_pause_to_combat() -> voi
 	)
 	await get_tree().process_frame
 	assert_int(grid.get_plant_dissatisfaction(cell)).is_equal(50)
+	dissat.queue_free()
+
+
+func test_standard_flee_threshold_is_one_hundred() -> void:
+	var cashew := ContentRegistry.get_species("cashew")
+	var threshold := DissatisfactionThresholdRes.get_flee_threshold(
+		cashew, Vector2i(5, 5), []
+	)
+	assert_int(threshold).is_equal(GameConstantsRes.STANDARD_FLEE_THRESHOLD)
+
+
+func test_sensitive_species_flee_threshold_is_seventy_five() -> void:
+	var peanut := ContentRegistry.get_species("peanut")
+	var threshold := DissatisfactionThresholdRes.get_flee_threshold(
+		peanut, Vector2i(5, 5), []
+	)
+	assert_int(threshold).is_equal(GameConstantsRes.SENSITIVE_FLEE_THRESHOLD)
+
+
+func test_hr_modifier_lowers_threshold_to_fifty() -> void:
+	var cashew := ContentRegistry.get_species("cashew")
+	var hr_mods := [{"center": Vector2i(5, 5), "radius": 3}]
+	var threshold := DissatisfactionThresholdRes.get_flee_threshold(
+		cashew, Vector2i(6, 5), hr_mods
+	)
+	assert_int(threshold).is_equal(GameConstantsRes.HR_FLEE_THRESHOLD)
+
+
+func test_should_flee_at_threshold() -> void:
+	assert_bool(DissatisfactionThresholdRes.should_flee(100, 100)).is_true()
+	assert_bool(DissatisfactionThresholdRes.should_flee(99, 100)).is_false()
+
+
+func test_trigger_flee_emits_event_and_tracks_active_count() -> void:
+	var dissat := DissatisfactionSystemScript.new()
+	add_child(dissat)
+	await get_tree().process_frame
+	RunManager.start_run(200)
+	var grid := RunManager.grid_data
+	var cell := _find_red_cell(grid)
+	grid.place_plant(cell, "cashew", 90)
+	var flee_events: Array = []
+	var handler := func(event: int, payload: Variant) -> void:
+		if event == RunEventRes.Type.FLEE_TRIGGERED:
+			flee_events.append(payload)
+	EventBus.run_event.connect(handler)
+	dissat.trigger_flee(cell)
+	assert_int(flee_events.size()).is_equal(1)
+	assert_str(str((flee_events[0] as Dictionary).get("species_id"))).is_equal("cashew")
+	assert_int(dissat.active_flee_count).is_equal(1)
+	dissat.notify_flee_completed(cell)
+	assert_int(dissat.active_flee_count).is_equal(0)
+	EventBus.run_event.disconnect(handler)
 	dissat.queue_free()
 
 
