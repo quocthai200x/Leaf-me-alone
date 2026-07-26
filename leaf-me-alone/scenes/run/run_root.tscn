@@ -1,11 +1,20 @@
-[gd_scene load_steps=5 format=3 uid="uid://run_root_scene"]
+[gd_scene load_steps=6 format=3 uid="uid://run_root_scene"]
 
 [ext_resource type="Script" path="res://scenes/run/run_root.gd" id="1_run_root"]
 [ext_resource type="PackedScene" uid="uid://pause_panel_shell" path="res://scenes/run/pause_panel.tscn" id="2_pause"]
 [ext_resource type="PackedScene" uid="uid://combat_hud_shell" path="res://scenes/run/combat_hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" uid="uid://map_view_node" path="res://scenes/run/map_view.tscn" id="4_map"]
+[ext_resource type="Script" path="res://scripts/input/input_router.gd" id="5_router"]
 
 [node name="RunRoot" type="Node2D"]
 script = ExtResource("1_run_root")
+
+[node name="MapView" parent="." instance=ExtResource("4_map")]
+unique_name_in_owner = true
+
+[node name="InputRouter" type="Node" parent="."]
+script = ExtResource("5_router")
+map_view_path = NodePath("../MapView")
 
 [node name="UI" type="CanvasLayer" parent="."]
 

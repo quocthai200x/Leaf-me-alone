@@ -2,26 +2,26 @@ extends Node2D
 ## Events emitted: none
 ## Events listened: STATE_CHANGED
 
-const GridRendererScene := preload("res://scenes/run/grid_renderer.tscn")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 const MAIN_MENU_SCENE := "res://scenes/main/main_menu.tscn"
 
+const PAUSE_VISIBLE_MAP_WIDTH := 1248.0
+const COMBAT_VISIBLE_MAP_WIDTH := 1920.0
+
 @onready var _status_label: Label = $UI/StatusLabel
 @onready var _map_dim_overlay: ColorRect = %MapDimOverlay
 @onready var _pause_panel: Control = %PausePanel
 @onready var _combat_hud: Control = %CombatHUD
+@onready var _map_view: Node2D = %MapView
+@onready var _input_router: Node = $InputRouter
 
-var _grid_renderer: Node2D
 var _combat_timer: float = 0.0
 
 
 func _ready() -> void:
 	EventBus.run_event.connect(_on_run_event)
-	_grid_renderer = GridRendererScene.instantiate()
-	_grid_renderer.position = Vector2(320, 120)
-	add_child(_grid_renderer)
 
 	if not ContentRegistry.is_loaded():
 		_status_label.text = "Content load FAILED"
@@ -32,7 +32,7 @@ func _ready() -> void:
 		_status_label.text = "RunRoot — no active run (start from Main Menu)"
 		return
 
-	_grid_renderer.sync_from_grid_data(grid)
+	_map_view.sync_from_grid_data(grid)
 	_apply_phase_ui(RunManager.get_state())
 	_update_status()
 
@@ -63,7 +63,6 @@ func _on_run_event(event: int, payload: Variant) -> void:
 		if _pause_panel.has_method("refresh_dogecoin"):
 			_pause_panel.refresh_dogecoin()
 	elif to_state == RunStateEnumRes.State.CardPickPhase:
-		# Card pick UI deferred to Epic 6 — auto-complete stub for loop testing
 		call_deferred("_complete_card_pick_stub")
 	_apply_phase_ui(to_state)
 	_update_status()
@@ -80,6 +79,12 @@ func _apply_phase_ui(state: int) -> void:
 	_map_dim_overlay.visible = is_pause
 	_pause_panel.visible = is_pause
 	_combat_hud.visible = is_combat
+
+	var map_width := PAUSE_VISIBLE_MAP_WIDTH if is_pause else COMBAT_VISIBLE_MAP_WIDTH
+	if _map_view.has_method("set_visible_map_size"):
+		_map_view.set_visible_map_size(Vector2(map_width, 1080.0))
+	if _input_router.has_method("set_visible_map_width"):
+		_input_router.set_visible_map_width(map_width)
 
 
 func _update_status() -> void:
