@@ -52,10 +52,19 @@ text = "DOGECOIN"
 
 [node name="DogecoinRow" type="HBoxContainer" parent="Content/DogecoinSection"]
 layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DogecoinIcon" type="Label" parent="Content/DogecoinSection/DogecoinRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"numeric"
+theme_override_font_sizes/font_size = 20
+text = "Ð"
 
 [node name="DogecoinValue" type="Label" parent="Content/DogecoinSection/DogecoinRow"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"numeric"
 theme_override_font_sizes/font_size = 20
 text = "0"
 

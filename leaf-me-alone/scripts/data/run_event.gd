@@ -3,6 +3,7 @@ extends RefCounted
 
 enum Type {
 	STATE_CHANGED,
+	DOGECOIN_CHANGED,
 	WAVE_STARTED,
 	WAVE_CLEARED,
 	PLANT_FLED,

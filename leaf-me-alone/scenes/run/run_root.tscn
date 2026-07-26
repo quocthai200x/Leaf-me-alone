@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://run_root_scene"]
+[gd_scene load_steps=10 format=3 uid="uid://run_root_scene"]
 
 [ext_resource type="Script" path="res://scenes/run/run_root.gd" id="1_run_root"]
 [ext_resource type="PackedScene" uid="uid://pause_panel_shell" path="res://scenes/run/pause_panel.tscn" id="2_pause"]
@@ -8,9 +8,13 @@
 [ext_resource type="PackedScene" uid="uid://tutorial_prompt_ui" path="res://scenes/ui/tutorial_prompt.tscn" id="6_tutorial_ui"]
 [ext_resource type="Script" path="res://scripts/systems/tutorial_system.gd" id="7_tutorial"]
 [ext_resource type="Script" path="res://scripts/systems/wave_spawner.gd" id="8_spawner"]
+[ext_resource type="Script" path="res://scripts/systems/economy_system.gd" id="9_economy"]
 
 [node name="RunRoot" type="Node2D"]
 script = ExtResource("1_run_root")
+
+[node name="EconomySystem" type="Node" parent="."]
+script = ExtResource("9_economy")
 
 [node name="MapView" parent="." instance=ExtResource("4_map")]
 unique_name_in_owner = true
