@@ -1,0 +1,26 @@
+[
+  {
+    "id": "peanut",
+    "display_name": "Peanut",
+    "plant_cost": 20,
+    "hp": 80,
+    "attack": 5,
+    "defense": 8
+  },
+  {
+    "id": "cashew",
+    "display_name": "Cashew",
+    "plant_cost": 35,
+    "hp": 90,
+    "attack": 18,
+    "defense": 6
+  },
+  {
+    "id": "teak",
+    "display_name": "Teak",
+    "plant_cost": 50,
+    "hp": 150,
+    "attack": 8,
+    "defense": 20
+  }
+]

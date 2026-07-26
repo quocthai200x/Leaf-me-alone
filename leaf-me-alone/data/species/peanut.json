@@ -1,0 +1,8 @@
+{
+  "id": "peanut",
+  "display_name": "Peanut",
+  "plant_cost": 20,
+  "hp": 80,
+  "attack": 5,
+  "defense": 8
+}

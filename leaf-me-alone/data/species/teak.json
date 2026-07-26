@@ -1,0 +1,8 @@
+{
+  "id": "teak",
+  "display_name": "Teak",
+  "plant_cost": 50,
+  "hp": 150,
+  "attack": 8,
+  "defense": 20
+}
