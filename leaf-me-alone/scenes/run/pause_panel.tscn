@@ -1,0 +1,109 @@
+[gd_scene load_steps=2 format=3 uid="uid://pause_panel_shell"]
+
+[ext_resource type="Script" path="res://scenes/run/pause_panel.gd" id="1_pause"]
+
+[node name="PausePanel" type="Control"]
+layout_mode = 3
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -672.0
+grow_horizontal = 0
+grow_vertical = 2
+script = ExtResource("1_pause")
+
+[node name="PanelBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.176471, 0.290196, 0.176471, 1)
+
+[node name="Content" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Pause Phase"
+
+[node name="DogecoinSection" type="VBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="DogecoinHeader" type="Label" parent="Content/DogecoinSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
+theme_override_font_sizes/font_size = 12
+text = "DOGECOIN"
+
+[node name="DogecoinRow" type="HBoxContainer" parent="Content/DogecoinSection"]
+layout_mode = 2
+
+[node name="DogecoinValue" type="Label" parent="Content/DogecoinSection/DogecoinRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "0"
+
+[node name="WeatherSection" type="VBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="WeatherHeader" type="Label" parent="Content/WeatherSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
+theme_override_font_sizes/font_size = 12
+text = "WEATHER"
+
+[node name="WeatherPlaceholder" type="Label" parent="Content/WeatherSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
+text = "Sunny (stub)"
+autowrap_mode = 2
+
+[node name="CatalogSection" type="VBoxContainer" parent="Content"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="CatalogHeader" type="Label" parent="Content/CatalogSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
+theme_override_font_sizes/font_size = 12
+text = "CATALOG"
+
+[node name="CatalogPlaceholder" type="Label" parent="Content/CatalogSection"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
+text = "Plant catalog placeholder"
+vertical_alignment = 1
+
+[node name="CareSection" type="VBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CareHeader" type="Label" parent="Content/CareSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
+theme_override_font_sizes/font_size = 12
+text = "CARE"
+
+[node name="CarePlaceholder" type="Label" parent="Content/CareSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
+text = "Water / Fertilize placeholder"

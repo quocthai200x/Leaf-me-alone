@@ -48,7 +48,7 @@ development_status:
   1-3-griddata-gridrenderer-and-seeded-tropical-map: done
   1-4-runmanager-state-machine-and-runroot-scene: done
   1-5-main-menu-and-run-start-flow: done
-  1-6-greybox-pause-panel-and-combat-hud-shells: backlog
+  1-6-greybox-pause-panel-and-combat-hud-shells: done
   1-7-map-pan-and-inputrouter-foundation: backlog
   1-8-tutorial-prompt-system-and-wave-1-script: backlog
   1-9-gdunit4-integration-and-run-flow-test: backlog

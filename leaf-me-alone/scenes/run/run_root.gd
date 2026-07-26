@@ -9,6 +9,9 @@ const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 const MAIN_MENU_SCENE := "res://scenes/main/main_menu.tscn"
 
 @onready var _status_label: Label = $UI/StatusLabel
+@onready var _map_dim_overlay: ColorRect = %MapDimOverlay
+@onready var _pause_panel: Control = %PausePanel
+@onready var _combat_hud: Control = %CombatHUD
 
 var _grid_renderer: Node2D
 var _combat_timer: float = 0.0
@@ -30,6 +33,7 @@ func _ready() -> void:
 		return
 
 	_grid_renderer.sync_from_grid_data(grid)
+	_apply_phase_ui(RunManager.get_state())
 	_update_status()
 
 	if RunManager.get_state() == RunStateEnumRes.State.PausePhase:
@@ -55,14 +59,27 @@ func _on_run_event(event: int, payload: Variant) -> void:
 	var to_state: int = int(data.get("to", -1))
 	if to_state == RunStateEnumRes.State.CombatPhase:
 		_combat_timer = RunManager.get_current_wave_duration()
+	elif to_state == RunStateEnumRes.State.PausePhase:
+		if _pause_panel.has_method("refresh_dogecoin"):
+			_pause_panel.refresh_dogecoin()
 	elif to_state == RunStateEnumRes.State.CardPickPhase:
 		# Card pick UI deferred to Epic 6 — auto-complete stub for loop testing
 		call_deferred("_complete_card_pick_stub")
+	_apply_phase_ui(to_state)
 	_update_status()
 
 
 func _complete_card_pick_stub() -> void:
 	RunManager.complete_card_pick()
+
+
+func _apply_phase_ui(state: int) -> void:
+	var is_pause := state == RunStateEnumRes.State.PausePhase
+	var is_combat := state == RunStateEnumRes.State.CombatPhase
+
+	_map_dim_overlay.visible = is_pause
+	_pause_panel.visible = is_pause
+	_combat_hud.visible = is_combat
 
 
 func _update_status() -> void:
@@ -71,6 +88,12 @@ func _update_status() -> void:
 	var timer_text := ""
 	if RunManager.get_state() == RunStateEnumRes.State.CombatPhase:
 		timer_text = " | Timer: %.1fs" % maxf(_combat_timer, 0.0)
+		if _combat_hud.has_method("update_wave_timer"):
+			_combat_hud.update_wave_timer(
+				wave,
+				_combat_timer,
+				GameConstantsRes.MAX_COMBAT_WAVES
+			)
 	_status_label.text = "RunRoot — %s | Wave %d/%d%s" % [
 		state_name,
 		wave,
