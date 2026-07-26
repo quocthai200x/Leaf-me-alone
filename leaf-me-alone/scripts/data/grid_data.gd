@@ -170,15 +170,26 @@ func get_plant_species_id(pos: Vector2i) -> String:
 
 
 func remove_plant_from_combat(pos: Vector2i) -> bool:
+	return set_depleted_after_flee(pos)
+
+
+func set_depleted_after_flee(pos: Vector2i) -> bool:
 	if not has_plant(pos):
 		return false
 	var cell: Dictionary = _cells[_index(pos)]
 	cell["occupied"] = false
+	cell["depleted"] = true
 	cell["plant_species_id"] = ""
 	cell["plant_hp"] = 0
 	cell["plant_dissatisfaction"] = 0
 	_cells[_index(pos)] = cell
 	return true
+
+
+func is_depleted(pos: Vector2i) -> bool:
+	if not is_in_bounds(pos):
+		return false
+	return bool(_cells[_index(pos)].get("depleted", false))
 
 
 static func _movement_cost_for_soil(soil: int) -> float:

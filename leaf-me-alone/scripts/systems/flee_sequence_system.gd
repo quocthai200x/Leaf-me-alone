@@ -39,7 +39,7 @@ func _run_flee_sequence(cell: Vector2i, trigger_data: Dictionary) -> void:
 	await _play_flee_animation(cell)
 	_play_whoosh_sfx()
 	if grid.has_plant(cell):
-		grid.remove_plant_from_combat(cell)
+		grid.set_depleted_after_flee(cell)
 	var flee_payload := FleeEventDataRes.from_flee(
 		cell, species_id, dissat, RunManager.run_state.wave_index
 	)

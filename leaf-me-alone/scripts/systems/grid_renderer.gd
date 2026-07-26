@@ -38,6 +38,8 @@ func sync_from_grid_data(grid: GridDataRes) -> void:
 			_tile_map.set_cell(pos, 0, _atlas_for_soil(soil))
 			if not grid.get_plant_species_id(pos).is_empty():
 				_plant_map.set_cell(pos, 0, Vector2i(4, 0))
+			elif grid.is_depleted(pos):
+				_plant_map.set_cell(pos, 0, Vector2i(5, 0))
 	_sync_dissatisfaction_indicators(grid)
 
 
@@ -120,19 +122,20 @@ func play_flee_animation(cell: Vector2i) -> void:
 
 
 func _build_greybox_tileset() -> void:
-	var image := Image.create(TILE_SIZE * 5, TILE_SIZE, false, Image.FORMAT_RGBA8)
+	var image := Image.create(TILE_SIZE * 6, TILE_SIZE, false, Image.FORMAT_RGBA8)
 	_fill_tile_color(image, 0, Color(0.55, 0.22, 0.18)) # RED soil
 	_fill_tile_color(image, 1, Color(0.86, 0.78, 0.55)) # SAND
 	_fill_tile_color(image, 2, Color(0.45, 0.45, 0.48)) # ROCK
 	_fill_tile_color(image, 3, Color(0.35, 0.55, 0.30)) # MOLD
 	_fill_tile_color(image, 4, Color(0.35, 0.75, 0.35)) # PLANT marker
+	_fill_tile_color(image, 5, Color(0.28, 0.24, 0.22)) # DEPLETED/barren
 
 	var texture := ImageTexture.create_from_image(image)
 	var tile_set := TileSet.new()
 	var source := TileSetAtlasSource.new()
 	source.texture = texture
 	source.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
-	for atlas_x in 5:
+	for atlas_x in 6:
 		source.create_tile(Vector2i(atlas_x, 0))
 	tile_set.add_source(source, 0)
 	_tile_map.tile_set = tile_set

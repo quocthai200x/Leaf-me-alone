@@ -28,9 +28,22 @@ func test_remove_plant_from_combat_clears_grid_plant() -> void:
 					cell = pos
 					break
 	grid.place_plant(cell, "peanut", 80)
-	assert_bool(grid.remove_plant_from_combat(cell)).is_true()
+	assert_bool(grid.set_depleted_after_flee(cell)).is_true()
 	assert_bool(grid.has_plant(cell)).is_false()
+	assert_bool(grid.is_depleted(cell)).is_true()
+	assert_bool(grid.can_place_plant(cell)).is_false()
 	assert_bool(bool(grid.get_cell(cell).get("occupied", true))).is_false()
+
+
+func test_pathfinding_service_blocks_cell_after_plant_fled() -> void:
+	var pathfinding := preload("res://scripts/systems/pathfinding_service.gd").new()
+	add_child(pathfinding)
+	await get_tree().process_frame
+	var cell := Vector2i(3, 4)
+	EventBus.emit_run_event(RunEventRes.Type.PLANT_FLED, {"cell": cell, "species_id": "peanut"})
+	await get_tree().process_frame
+	assert_bool(pathfinding.is_cell_blocked(cell)).is_true()
+	pathfinding.queue_free()
 
 
 func test_flee_sequence_emits_plant_fled_and_clears_plant() -> void:
@@ -56,6 +69,8 @@ func test_flee_sequence_emits_plant_fled_and_clears_plant() -> void:
 	await get_tree().create_timer(0.2).timeout
 	assert_int(fled_events.size()).is_equal(1)
 	assert_bool(grid.has_plant(cell)).is_false()
+	assert_bool(grid.is_depleted(cell)).is_true()
+	assert_bool(grid.can_place_plant(cell)).is_false()
 	EventBus.run_event.disconnect(handler)
 	flee.queue_free()
 	dissat.queue_free()
