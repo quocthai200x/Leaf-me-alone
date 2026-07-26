@@ -53,7 +53,7 @@ development_status:
   1-8-tutorial-prompt-system-and-wave-1-script: done
   1-9-gdunit4-integration-and-run-flow-test: done
   epic-1-retrospective: optional
-  epic-2: in-progress
+  epic-2: done
   2-1-godot-theme-foundation-and-economy-data: done
   2-2-economysystem-and-dogecoin-wallet: done
   2-3-interactionmode-fsm-place-and-care-modes: done
@@ -62,7 +62,7 @@ development_status:
   2-6-peanut-buff-debuff-species: done
   2-7-cashew-attack-reflect-species: done
   2-8-teak-defense-tank-species: done
-  2-9-dissatisfaction-tease-pre-flee-indicator: backlog
+  2-9-dissatisfaction-tease-pre-flee-indicator: done
   epic-2-retrospective: optional
   epic-3: backlog
   3-1-dissatisfactionsystem-and-multi-cause-tracking: backlog

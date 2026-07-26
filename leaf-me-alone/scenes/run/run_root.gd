@@ -72,6 +72,8 @@ func _on_run_event(event: int, payload: Variant) -> void:
 	if event == RunEventRes.Type.PLANT_CARED:
 		var care_data: Dictionary = payload
 		var cell: Vector2i = care_data.get("cell", Vector2i(-1, -1))
+		if RunManager.grid_data != null and _map_view.has_method("sync_from_grid_data"):
+			_map_view.sync_from_grid_data(RunManager.grid_data)
 		if cell.x >= 0 and _map_view.has_method("play_care_juice"):
 			_map_view.play_care_juice(cell)
 		if _pause_panel.has_method("refresh_dogecoin"):

@@ -8,3 +8,5 @@ script = ExtResource("1_grid_renderer")
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 
 [node name="PlantMapLayer" type="TileMapLayer" parent="."]
+
+[node name="Indicators" type="Node2D" parent="."]

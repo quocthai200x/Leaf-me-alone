@@ -7,6 +7,10 @@ const DEBUG_WAVE_DURATIONS_SEC: Array[float] = [3.0, 3.6, 4.2, 4.8, 6.0]
 
 const MAX_COMBAT_WAVES := 5
 
+# Dissatisfaction tease (Story 2.9) — flee logic deferred to Epic 3
+const DISSATISFACTION_TEASE_THRESHOLD := 50
+const DISSATISFACTION_METER_THRESHOLD := 50
+
 
 static func get_wave_duration_sec(wave_number: int) -> float:
 	var idx := clampi(wave_number - 1, 0, WAVE_DURATIONS_SEC.size() - 1)
