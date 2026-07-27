@@ -22,6 +22,7 @@ const COMBAT_VISIBLE_MAP_WIDTH := 1920.0
 @onready var _wave_spawner: Node = $WaveSpawner
 @onready var _dissatisfaction_system: Node = $DissatisfactionSystem
 @onready var _pathfinding_service: Node = $PathfindingService
+@onready var _structure_hp_system: Node = $StructureHpSystem
 
 var _combat_timer: float = 0.0
 
@@ -40,6 +41,8 @@ func _ready() -> void:
 		return
 
 	_map_view.sync_from_grid_data(grid)
+	if _map_view.has_method("spawn_structures"):
+		_map_view.spawn_structures(grid)
 	_init_pathfinding(grid)
 	_apply_phase_ui(RunManager.get_state())
 	_update_status()
@@ -132,6 +135,11 @@ func _on_run_event(event: int, payload: Variant) -> void:
 			_pause_panel.refresh_dogecoin()
 		if _pause_panel.has_method("refresh_structure_summary"):
 			_pause_panel.refresh_structure_summary()
+		if _structure_hp_system != null:
+			if _structure_hp_system.has_method("can_apply_between_wave_restoration"):
+				if _structure_hp_system.can_apply_between_wave_restoration():
+					if _structure_hp_system.has_method("apply_between_wave_restoration_stub"):
+						_structure_hp_system.apply_between_wave_restoration_stub()
 		_handle_pause_entry()
 	elif to_state == RunStateEnumRes.State.CardPickPhase:
 		call_deferred("_complete_card_pick_stub")

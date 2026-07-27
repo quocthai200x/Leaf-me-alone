@@ -29,6 +29,15 @@ func start_run(seed_value: int) -> GridDataRes:
 	_assign_run_weather(seed_value)
 	grid_data = GridDataRes.new()
 	grid_data.generate_from_seed(run_state.master_seed)
+	grid_data.place_structures_from_seed(run_state.master_seed)
+	EventBus.emit_run_event(
+		RunEvent.Type.STRUCTURES_PLACED,
+		{
+			"core_cell": grid_data.get_forest_core_cell(),
+			"nest_cells": grid_data.get_root_nest_cells(),
+			"structure_count": grid_data.get_structures().size(),
+		}
+	)
 	run_state.wave_index = 0
 	transition_to(RunStateEnum.State.PausePhase)
 	return grid_data

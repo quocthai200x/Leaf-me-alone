@@ -61,12 +61,13 @@ func test_plant_fled_blocks_cell_incrementally() -> void:
 func test_goal_selection_prefers_forest_core_then_root_nest() -> void:
 	var grid := GridDataRes.new()
 	grid.generate_from_seed(42)
+	grid.place_structures_from_seed(42)
 	var pathfinding := PathfindingServiceScript.new()
 	add_child(pathfinding)
 	pathfinding.initialize_from_grid(grid)
 
 	var core := pathfinding.get_forest_core_stub()
-	assert_vector(core).is_equal(Vector2i(grid.width / 2, grid.height - 1))
+	assert_vector(core).is_equal(grid.get_forest_core_cell())
 	assert_int(pathfinding.get_root_nest_stubs().size()).is_equal(3)
 
 	var from := Vector2i(-1, -1)
@@ -89,6 +90,7 @@ func test_goal_selection_prefers_forest_core_then_root_nest() -> void:
 func test_goal_falls_back_to_best_extract_tile() -> void:
 	var grid := GridDataRes.new()
 	grid.generate_from_seed(7)
+	grid.place_structures_from_seed(7)
 	var pathfinding := PathfindingServiceScript.new()
 	add_child(pathfinding)
 
@@ -141,7 +143,9 @@ func test_select_goal_and_path_returns_goal_with_cached_path() -> void:
 func _grid_from_fixture() -> GridDataRes:
 	var fixture := _load_fixture()
 	var grid := GridDataRes.new()
-	grid.generate_from_seed(int(fixture.get("master_seed", 12345)))
+	var seed_value := int(fixture.get("master_seed", 12345))
+	grid.generate_from_seed(seed_value)
+	grid.place_structures_from_seed(seed_value)
 	return grid
 
 

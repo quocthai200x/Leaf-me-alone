@@ -4,7 +4,7 @@ extends Node
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const GridDataRes := preload("res://scripts/data/grid_data.gd")
 
-# Epic 5 stubs — replace with real Structure node positions.
+# Legacy fallback when GridData has no structures yet (unit tests).
 const ROOT_NEST_OFFSETS: Array[Vector2i] = [
 	Vector2i(-8, -2),
 	Vector2i(0, -2),
@@ -71,12 +71,18 @@ func select_goal_and_path(from: Vector2i) -> Dictionary:
 
 
 func get_forest_core_stub() -> Vector2i:
+	if _grid != null:
+		var cell := _grid.get_forest_core_cell()
+		if cell != Vector2i(-1, -1):
+			return cell
 	if _grid == null:
 		return Vector2i.ZERO
 	return Vector2i(_grid.width / 2, _grid.height - 1)
 
 
 func get_root_nest_stubs() -> Array[Vector2i]:
+	if _grid != null and not _grid.get_root_nest_cells().is_empty():
+		return _grid.get_root_nest_cells()
 	var core := get_forest_core_stub()
 	var nests: Array[Vector2i] = []
 	for offset in ROOT_NEST_OFFSETS:

@@ -2,12 +2,15 @@ class_name GridData
 extends Resource
 
 const SoilTypeRes := preload("res://scripts/data/soil_type.gd")
+const StructureTypeRes := preload("res://scripts/data/structure_type.gd")
+const StructurePlacementLogicRes := preload("res://scripts/systems/structure_placement_logic.gd")
 const DEFAULT_WIDTH := 32
 const DEFAULT_HEIGHT := 24
 
 var width: int = DEFAULT_WIDTH
 var height: int = DEFAULT_HEIGHT
 var _cells: Array = []
+var structures: Array = []
 
 
 func generate_from_seed(master_seed: int) -> void:
@@ -34,6 +37,58 @@ func generate_from_seed(master_seed: int) -> void:
 			elif dist <= effective_radius:
 				soil = SoilTypeRes.Type.SAND
 			_set_cell_raw(pos, _make_cell(soil))
+
+
+func place_structures_from_seed(master_seed: int) -> void:
+	var entries: Array = StructurePlacementLogicRes.compute_structure_entries(self, master_seed)
+	apply_structures(entries)
+
+
+func apply_structures(entries: Array) -> void:
+	structures = entries.duplicate(true)
+	for i in structures.size():
+		var entry: Dictionary = structures[i]
+		var cell: Vector2i = entry.get("cell", Vector2i(-1, -1))
+		if not is_in_bounds(cell):
+			continue
+		var cell_data: Dictionary = _cells[_index(cell)]
+		cell_data["occupied"] = true
+		cell_data["structure_ref"] = i
+		_cells[_index(cell)] = cell_data
+
+
+func get_structures() -> Array:
+	return structures.duplicate(true)
+
+
+func get_structure_at(pos: Vector2i) -> Dictionary:
+	if not is_in_bounds(pos):
+		return {}
+	var ref := int(_cells[_index(pos)].get("structure_ref", -1))
+	if ref < 0 or ref >= structures.size():
+		return {}
+	return structures[ref].duplicate(true)
+
+
+func get_forest_core_cell() -> Vector2i:
+	for entry in structures:
+		if str(entry.get("type", "")) == StructureTypeRes.FOREST_CORE:
+			return entry.get("cell", Vector2i(-1, -1))
+	return Vector2i(-1, -1)
+
+
+func get_root_nest_cells() -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+	for entry in structures:
+		if str(entry.get("type", "")) == StructureTypeRes.ROOT_NEST:
+			cells.append(entry.get("cell", Vector2i(-1, -1)))
+	return cells
+
+
+func has_structure_at(pos: Vector2i) -> bool:
+	if not is_in_bounds(pos):
+		return false
+	return int(_cells[_index(pos)].get("structure_ref", -1)) >= 0
 
 
 func get_cell(pos: Vector2i) -> Dictionary:
@@ -111,6 +166,8 @@ func can_place_plant(pos: Vector2i) -> bool:
 		return false
 	var cell: Dictionary = _cells[_index(pos)]
 	if bool(cell.get("occupied", false)) or bool(cell.get("depleted", false)):
+		return false
+	if int(cell.get("structure_ref", -1)) >= 0:
 		return false
 	return get_soil_type(pos) == SoilTypeRes.Type.RED
 

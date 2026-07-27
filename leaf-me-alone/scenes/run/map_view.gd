@@ -6,6 +6,9 @@ const PlacementPreviewScript := preload("res://scripts/systems/placement_preview
 const GridDataRes := preload("res://scripts/data/grid_data.gd")
 const PlantPlacementSystemScript := preload("res://scripts/systems/plant_placement_system.gd")
 const CareSystemScript := preload("res://scripts/systems/care_system.gd")
+const StructureTypeRes := preload("res://scripts/data/structure_type.gd")
+const ForestCoreScene := preload("res://scenes/entities/structures/forest_core.tscn")
+const RootNestScene := preload("res://scenes/entities/structures/root_nest.tscn")
 
 const TILE_SIZE := 16
 const DISPLAY_SCALE := 3.0
@@ -13,6 +16,7 @@ const PAN_MARGIN := 80.0
 
 var _grid_renderer: Node2D
 var _placement_preview: Node2D
+var _entities: Node2D
 var _visible_size: Vector2 = Vector2(1920.0, 1080.0)
 var _pan_enabled: bool = false
 
@@ -23,9 +27,39 @@ func _ready() -> void:
 	_grid_renderer.scale = Vector2(DISPLAY_SCALE, DISPLAY_SCALE)
 	add_child(_grid_renderer)
 
+	_entities = get_node_or_null("Entities") as Node2D
+	if _entities == null:
+		_entities = Node2D.new()
+		_entities.name = "Entities"
+		add_child(_entities)
+
 	_placement_preview = PlacementPreviewScript.new()
 	_placement_preview.scale = Vector2(DISPLAY_SCALE, DISPLAY_SCALE)
 	add_child(_placement_preview)
+
+
+func spawn_structures(grid: GridDataRes) -> void:
+	if _entities == null:
+		return
+	for child in _entities.get_children():
+		child.queue_free()
+	for entry in grid.get_structures():
+		var type_id := str(entry.get("type", ""))
+		var scene: PackedScene = null
+		if type_id == StructureTypeRes.FOREST_CORE:
+			scene = ForestCoreScene
+		elif type_id == StructureTypeRes.ROOT_NEST:
+			scene = RootNestScene
+		if scene == null:
+			continue
+		var node := scene.instantiate()
+		if node.has_method("configure"):
+			node.configure(
+				str(entry.get("id", "")),
+				type_id,
+				entry.get("cell", Vector2i.ZERO)
+			)
+		_entities.add_child(node)
 
 
 func sync_from_grid_data(grid: GridDataRes) -> void:
