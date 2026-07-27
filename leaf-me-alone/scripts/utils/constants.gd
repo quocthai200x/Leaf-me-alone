@@ -52,6 +52,13 @@ const HR_STING_COOLDOWN_SEC := 5.0
 const PR_BILLBOARD_RADIUS_TILES := 3
 const PR_BILLBOARD_DISSATISFACTION_DELTA := 10
 
+# Structure HP stubs (Story 4.7) — damage deferred to Epic 5
+const FOREST_CORE_MAX_HP := 500
+const ROOT_NEST_MAX_HP := 200
+const STRUCTURE_DANGER_HP_RATIO := 0.25
+const WAVE_BANNER_DURATION_SEC := 3.0
+const SLICE_WAVES_PATH := "res://data/waves/slice_waves.json"
+
 # Flee sequence timing (Story 3.4)
 const FLEE_ANGRY_PHASE_SEC := 0.35
 const FLEE_RUN_PHASE_SEC := 0.45
@@ -59,6 +66,7 @@ const DEBUG_FLEE_ANGRY_PHASE_SEC := 0.05
 const DEBUG_FLEE_RUN_PHASE_SEC := 0.05
 const FLEE_WHOOSH_BUS := &"SFX"
 const COMBAT_AUDIO_BUS := &"Combat"
+const STINGS_AUDIO_BUS := &"Stings"
 
 # Mass flee feedback (Story 3.7)
 const MASS_FLEE_MIN_COUNT := 2

@@ -40,6 +40,13 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Pause Phase"
 
+[node name="StructureSummary" type="Label" parent="Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.658824, 0.709804, 0.627451, 1)
+theme_override_font_sizes/font_size = 13
+text = "Structures — Core 100% · Nests 100%"
+
 [node name="DogecoinSection" type="VBoxContainer" parent="Content"]
 layout_mode = 2
 theme_override_constants/separation = 4

@@ -123,3 +123,82 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "0"
+
+[node name="WaveBanner" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 80.0
+offset_right = 220.0
+offset_bottom = 124.0
+grow_horizontal = 2
+
+[node name="WaveBannerLabel" type="Label" parent="WaveBanner"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.1, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Wave 2 — 🦍 HR Ape incoming!"
+horizontal_alignment = 1
+
+[node name="StructureHpCluster" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -120.0
+offset_right = 220.0
+offset_bottom = -24.0
+grow_vertical = 0
+
+[node name="VBox" type="VBoxContainer" parent="StructureHpCluster"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StructureTitle" type="Label" parent="StructureHpCluster/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🌳 Core · 🪹×3"
+
+[node name="CoreRow" type="VBoxContainer" parent="StructureHpCluster/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="CoreLabel" type="Label" parent="StructureHpCluster/VBox/CoreRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Core"
+
+[node name="CoreHpBar" type="ProgressBar" parent="StructureHpCluster/VBox/CoreRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 8)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="NestsRow" type="VBoxContainer" parent="StructureHpCluster/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="NestsLabel" type="Label" parent="StructureHpCluster/VBox/NestsRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "Nests"
+
+[node name="NestsHpBar" type="ProgressBar" parent="StructureHpCluster/VBox/NestsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 8)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="WaveStingPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true

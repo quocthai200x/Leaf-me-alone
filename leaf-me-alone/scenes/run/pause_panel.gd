@@ -14,6 +14,7 @@ const ROLE_LABELS := {"peanut": "Buff", "cashew": "ATK", "teak": "DEF"}
 const WEATHER_MISMATCH_ICON := "⚠"
 
 @onready var _tutorial_actions: VBoxContainer = %TutorialActions
+@onready var _structure_summary: Label = %StructureSummary
 @onready var _dogecoin_icon: Label = %DogecoinIcon
 @onready var _dogecoin_value: Label = %DogecoinValue
 @onready var _weather_value: Label = %WeatherValue
@@ -31,6 +32,7 @@ func _ready() -> void:
 	_build_care_actions()
 	refresh_dogecoin()
 	refresh_weather()
+	refresh_structure_summary()
 	refresh_care_affordability()
 	%PlacePeanutButton.pressed.connect(_on_place_peanut_pressed)
 	%WaterPlantButton.pressed.connect(_on_water_plant_pressed)
@@ -50,6 +52,16 @@ func refresh_weather() -> void:
 	var weather_id := RunManager.run_state.current_weather
 	_weather_value.text = WeatherDefRes.format_pause_readout(weather_id)
 	_refresh_catalog_weather_icons()
+
+
+func refresh_structure_summary() -> void:
+	if _structure_summary == null:
+		return
+	var structure := _get_structure_hp_system()
+	if structure != null and structure.has_method("get_pause_summary"):
+		_structure_summary.text = structure.get_pause_summary()
+	else:
+		_structure_summary.text = "Structures — Core 100% · Nests 100%"
 
 
 func _refresh_catalog_weather_icons() -> void:
@@ -182,6 +194,13 @@ func _get_economy_system() -> EconomySystemScript:
 	return nodes[0] as EconomySystemScript
 
 
+func _get_structure_hp_system() -> Node:
+	var nodes := get_tree().get_nodes_in_group("structure_hp_system")
+	if nodes.is_empty():
+		return null
+	return nodes[0]
+
+
 func _on_place_peanut_pressed() -> void:
 	EventBus.emit_run_event(
 		RunEventRes.Type.UI_INTENT,
@@ -215,6 +234,8 @@ func _on_run_event(event: int, payload: Variant) -> void:
 		_update_tutorial_actions_visibility()
 		refresh_care_affordability()
 		refresh_weather()
+		if int(payload.get("to", -1)) == RunStateEnumRes.State.PausePhase:
+			refresh_structure_summary()
 
 
 func _update_tutorial_actions_visibility() -> void:

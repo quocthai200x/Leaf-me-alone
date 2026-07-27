@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-07-26T16:01:00+07:00
-last_updated: 2026-07-27T23:15:00+07:00
+last_updated: 2026-07-27T23:20:00+07:00
 project: snake-rougelike
 project_key: NOKEY
 tracking_system: file-system
@@ -73,14 +73,14 @@ development_status:
   3-6-weather-stub-single-weather-type: done
   3-7-mass-flee-feedback-and-warning-chirp: done
   epic-3-retrospective: optional
-  epic-4: in-progress
+  epic-4: done
   4-1-apepool-and-pathfindingservice: done
   4-2-wavespawner-interval-bursts-and-wave-scripts: done
   4-3-saw-ape-worker-behavior: done
   4-4-hr-ape-flee-threshold-reduction: done
   4-5-pr-ape-billboard-dissatisfaction-aoe: done
   4-6-dogecoin-earn-on-ape-defeat: done
-  4-7-combat-hud-structure-hp-and-wave-banner: backlog
+  4-7-combat-hud-structure-hp-and-wave-banner: done
   epic-4-retrospective: optional
   epic-5: backlog
   5-1-forest-core-and-root-nest-placement: backlog

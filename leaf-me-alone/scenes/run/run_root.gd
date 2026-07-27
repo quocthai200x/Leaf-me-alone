@@ -121,11 +121,17 @@ func _on_run_event(event: int, payload: Variant) -> void:
 		if wave_index == 1:
 			if _tutorial_system.has_method("show_dissatisfaction_prompt"):
 				_tutorial_system.show_dissatisfaction_prompt()
+		if _combat_hud.has_method("show_wave_banner"):
+			_combat_hud.show_wave_banner(wave_index)
+		if _combat_hud.has_method("refresh_structure_hp"):
+			_combat_hud.refresh_structure_hp()
 	elif to_state == RunStateEnumRes.State.PausePhase:
 		if _wave_spawner.has_method("stop_wave"):
 			_wave_spawner.stop_wave()
 		if _pause_panel.has_method("refresh_dogecoin"):
 			_pause_panel.refresh_dogecoin()
+		if _pause_panel.has_method("refresh_structure_summary"):
+			_pause_panel.refresh_structure_summary()
 		_handle_pause_entry()
 	elif to_state == RunStateEnumRes.State.CardPickPhase:
 		call_deferred("_complete_card_pick_stub")
