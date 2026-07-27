@@ -124,5 +124,7 @@ Label/meme/colors/font_color = Color(1, 0.701961, 0.278431, 1)
 Label/meme/font_sizes/font_size = 18
 Label/numeric/colors/font_color = Color(0.760784, 0.65098, 0.2, 1)
 Label/numeric/font_sizes/font_size = 16
+Label/carbon_credit/colors/font_color = Color(0.419608, 0.796078, 0.666667, 1)
+Label/carbon_credit/font_sizes/font_size = 18
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel_container")
 PanelContainer/pause_panel/styles/panel = SubResource("StyleBoxFlat_pause_panel")

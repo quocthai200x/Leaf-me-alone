@@ -9,10 +9,12 @@ const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 func before_test() -> void:
 	RunManager.enter_main_menu()
 	ContentRegistry.load_all()
+	SaveManager.reset_meta_for_tests()
 
 
 func after_test() -> void:
 	RunManager.enter_main_menu()
+	SaveManager.reset_meta_for_tests()
 
 
 func test_loss_copy_default() -> void:
@@ -32,6 +34,30 @@ func test_cc_preview_loss_caps_at_eighty() -> void:
 
 func test_cc_preview_win() -> void:
 	assert_int(RunEndLogicRes.compute_cc_preview("win", 5)).is_equal(GameConstantsRes.RUN_END_CC_WIN_PREVIEW)
+
+
+func test_cc_grant_matches_preview() -> void:
+	assert_int(RunEndLogicRes.compute_cc_grant("loss", 3)).is_equal(
+		RunEndLogicRes.compute_cc_preview("loss", 3)
+	)
+
+
+func test_run_loss_grants_carbon_credit_to_save() -> void:
+	RunManager.start_run(777)
+	RunManager.begin_combat_wave()
+	RunManager.declare_run_loss("forest_core_destroyed")
+	assert_int(RunManager.run_state.cc_earned_this_run).is_equal(20)
+	assert_int(SaveManager.get_carbon_credit()).is_equal(20)
+
+
+func test_run_win_grants_carbon_credit_to_save() -> void:
+	RunManager.start_run(888)
+	for _i in GameConstantsRes.MAX_COMBAT_WAVES:
+		RunManager.begin_combat_wave()
+	RunManager.run_state.director_defeated = true
+	RunManager.declare_run_win()
+	assert_int(RunManager.run_state.cc_earned_this_run).is_equal(GameConstantsRes.RUN_END_CC_WIN_PREVIEW)
+	assert_int(SaveManager.get_carbon_credit()).is_equal(GameConstantsRes.RUN_END_CC_WIN_PREVIEW)
 
 
 func test_declare_run_win_on_wave_five() -> void:

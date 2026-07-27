@@ -4,6 +4,7 @@ extends Node
 
 const GridDataRes := preload("res://scripts/data/grid_data.gd")
 const GameConstantsRes := preload("res://scripts/utils/constants.gd")
+const RunEndLogicRes := preload("res://scripts/systems/run_end_logic.gd")
 
 var _state: int = RunStateEnum.State.MainMenu
 var _previous_state: int = RunStateEnum.State.MainMenu
@@ -84,13 +85,16 @@ func declare_run_loss(reason: String) -> void:
 		return
 	run_state.run_outcome = "loss"
 	run_state.loss_reason = reason
+	var waves_cleared := maxi(run_state.wave_index - 1, 0)
+	_grant_run_end_carbon_credit(waves_cleared)
 	EventBus.emit_run_event(
 		RunEvent.Type.RUN_LOST,
 		{
 			"reason": reason,
 			"wave_index": run_state.wave_index,
-			"waves_cleared": maxi(run_state.wave_index - 1, 0),
+			"waves_cleared": waves_cleared,
 			"seed": run_state.master_seed,
+			"cc_earned": run_state.cc_earned_this_run,
 		}
 	)
 	transition_to(RunStateEnum.State.RunEnd)
@@ -103,12 +107,14 @@ func declare_run_win() -> void:
 		return
 	run_state.run_outcome = "win"
 	run_state.loss_reason = ""
+	_grant_run_end_carbon_credit(run_state.wave_index)
 	EventBus.emit_run_event(
 		RunEvent.Type.RUN_WON,
 		{
 			"wave_index": run_state.wave_index,
 			"waves_cleared": run_state.wave_index,
 			"seed": run_state.master_seed,
+			"cc_earned": run_state.cc_earned_this_run,
 		}
 	)
 	transition_to(RunStateEnum.State.RunEnd)
@@ -209,3 +215,10 @@ func _assign_run_weather(seed_value: int) -> void:
 		return
 	var idx := absi(seed_value) % options.size()
 	run_state.current_weather = options[idx]
+
+
+func _grant_run_end_carbon_credit(waves_cleared: int) -> void:
+	var amount := RunEndLogicRes.compute_cc_grant(run_state.run_outcome, waves_cleared)
+	run_state.cc_earned_this_run = amount
+	if amount > 0:
+		SaveManager.add_carbon_credit(amount)
