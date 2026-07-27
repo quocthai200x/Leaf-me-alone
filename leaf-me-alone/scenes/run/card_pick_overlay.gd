@@ -1,13 +1,14 @@
 extends Control
-## Card Pick overlay — full-screen scrim, three clickable panel-cards (Story 6.1).
-## Events emitted: CARD_PICKED (via EventBus)
+## Card Pick overlay — full-screen scrim, three clickable panel-cards (Story 6.1+).
+## Events emitted: CARD_PICKED (via CardEffectApplier → EventBus)
 ## Events listened: none
 
-const RunEventRes := preload("res://scripts/data/run_event.gd")
 const CardPickStubDataRes := preload("res://scripts/systems/card_pick_stub_data.gd")
+const CardEffectApplierRes := preload("res://scripts/systems/card_effect_applier.gd")
 
 const CARD_MAX_WIDTH := 320.0
 const CARD_MIN_WIDTH := 240.0
+const FLIP_DURATION_SEC := 0.15
 
 @onready var _heading: Label = %HeadingLabel
 @onready var _subtitle: Label = %SubtitleLabel
@@ -60,6 +61,7 @@ func _build_card_panel(option: Dictionary) -> Control:
 	card_root.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	card_root.mouse_filter = Control.MOUSE_FILTER_STOP
 	card_root.focus_mode = Control.FOCUS_NONE
+	card_root.pivot_offset = Vector2(CARD_MIN_WIDTH * 0.5, 140.0)
 
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 0)
@@ -102,7 +104,7 @@ func _build_card_panel(option: Dictionary) -> Control:
 	vbox.add_child(body)
 	card_root.add_child(vbox)
 
-	card_root.gui_input.connect(_on_card_gui_input.bind(option, card_root))
+	card_root.gui_input.connect(_on_card_gui_input.bind(option, card_root, accent))
 	card_root.mouse_entered.connect(func() -> void: detail.visible = true)
 	card_root.mouse_exited.connect(func() -> void:
 		if not _committed:
@@ -114,16 +116,21 @@ func _build_card_panel(option: Dictionary) -> Control:
 	return wrapper
 
 
-func _on_card_gui_input(event: InputEvent, option: Dictionary, card_root: PanelContainer) -> void:
+func _on_card_gui_input(
+	event: InputEvent,
+	option: Dictionary,
+	card_root: PanelContainer,
+	accent: ColorRect
+) -> void:
 	if _committed:
 		return
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
-			_commit_pick(option, card_root)
+			_commit_pick(option, card_root, accent)
 
 
-func _commit_pick(option: Dictionary, card_root: PanelContainer) -> void:
+func _commit_pick(option: Dictionary, card_root: PanelContainer, accent: ColorRect = null) -> void:
 	if _committed:
 		return
 	_committed = true
@@ -134,16 +141,25 @@ func _commit_pick(option: Dictionary, card_root: PanelContainer) -> void:
 		detail.visible = true
 	var card_id := str(option.get("id", ""))
 	var card_type := str(option.get("type", ""))
-	EventBus.emit_run_event(
-		RunEventRes.Type.CARD_PICKED,
-		{
-			"card_id": card_id,
-			"card_type": card_type,
-			"wave_index": _wave_index,
-		}
-	)
+	if card_type == "stat" and accent != null:
+		_play_select_juice(card_root, accent)
+	CardEffectApplierRes.apply(card_id, _wave_index)
+	await get_tree().create_timer(FLIP_DURATION_SEC).timeout
 	RunManager.complete_card_pick()
 	hide_overlay()
+
+
+func _play_select_juice(card_root: PanelContainer, accent: ColorRect) -> void:
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(card_root, "scale", Vector2(1.05, 1.05), FLIP_DURATION_SEC * 0.5)
+	tween.tween_property(card_root, "rotation_degrees", 4.0, FLIP_DURATION_SEC * 0.5)
+	tween.chain().tween_property(card_root, "scale", Vector2.ONE, FLIP_DURATION_SEC * 0.5)
+	tween.parallel().tween_property(card_root, "rotation_degrees", 0.0, FLIP_DURATION_SEC * 0.5)
+	if accent != null:
+		var flash := accent.color
+		tween.parallel().tween_property(accent, "color", flash.lightened(0.35), FLIP_DURATION_SEC * 0.4)
+		tween.chain().tween_property(accent, "color", flash, FLIP_DURATION_SEC * 0.4)
 
 
 func _find_detail_label(card_root: PanelContainer) -> Label:

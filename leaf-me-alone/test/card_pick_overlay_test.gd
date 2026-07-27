@@ -3,12 +3,13 @@ extends GdUnitTestSuite
 
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 const RunEventRes := preload("res://scripts/data/run_event.gd")
-const CardPickStubDataRes := preload("res://scripts/systems/card_pick_stub_data.gd")
+const CardSystemRes := preload("res://scripts/systems/card_system.gd")
 const CardPickOverlayScene := preload("res://scenes/run/card_pick_overlay.tscn")
 
 
 func before_test() -> void:
 	RunManager.enter_main_menu()
+	ContentRegistry.load_all()
 
 
 func test_wave_two_expires_into_card_pick_phase() -> void:
@@ -29,8 +30,8 @@ func test_wave_one_expires_into_pause_not_card_pick() -> void:
 	assert_int(RunManager.get_state()).is_equal(RunStateEnumRes.State.PausePhase)
 
 
-func test_stub_data_returns_three_options() -> void:
-	var options := CardPickStubDataRes.build_options_for_wave(2, 999)
+func test_card_system_returns_three_options() -> void:
+	var options := CardSystemRes.build_options_for_wave(2, 999)
 	assert_int(options.size()).is_equal(3)
 	for option in options:
 		var data: Dictionary = option
@@ -50,7 +51,7 @@ func test_card_pick_overlay_commit_transitions_to_pause() -> void:
 	RunManager.on_combat_timer_expired()
 	assert_int(RunManager.get_state()).is_equal(RunStateEnumRes.State.CardPickPhase)
 
-	var options := CardPickStubDataRes.build_options_for_wave(2, 777)
+	var options := CardSystemRes.build_options_for_wave(2, 777)
 	overlay.show_pick(2, options)
 	await get_tree().process_frame
 
@@ -65,6 +66,7 @@ func test_card_pick_overlay_commit_transitions_to_pause() -> void:
 	var first_wrapper := cards_row.get_child(0) as MarginContainer
 	var first_card := first_wrapper.get_child(0) as PanelContainer
 	overlay._commit_pick(options[0], first_card)
+	await get_tree().create_timer(0.2).timeout
 
 	assert_bool(picked_state.picked).is_true()
 	assert_int(RunManager.get_state()).is_equal(RunStateEnumRes.State.PausePhase)

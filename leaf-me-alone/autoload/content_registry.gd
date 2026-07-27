@@ -1,9 +1,11 @@
 extends Node
 
 const EconomyDefScript := preload("res://scripts/data/economy_def.gd")
+const CardDefScript := preload("res://scripts/data/card_def.gd")
 
 const SPECIES_DIR := "res://data/species/"
 const APES_DIR := "res://data/apes/"
+const CARDS_DIR := "res://data/cards/"
 const ECONOMY_PATH := "res://data/economy.json"
 const FALLBACK_SPECIES_PATH := "res://data/fallback/species.json"
 const FALLBACK_APES_PATH := "res://data/fallback/apes.json"
@@ -13,6 +15,7 @@ const MIN_APES := 2
 
 var _species: Dictionary = {}
 var _apes: Dictionary = {}
+var _cards: Dictionary = {}
 var _economy: EconomyDef = null
 var _loaded: bool = false
 
@@ -21,8 +24,8 @@ func _ready() -> void:
 	var ok := load_all()
 	if ok:
 		print(
-			"[ContentRegistry] Boot load OK — %d species, %d apes, economy loaded"
-			% [_species.size(), _apes.size()]
+			"[ContentRegistry] Boot load OK — %d species, %d apes, %d cards, economy loaded"
+			% [_species.size(), _apes.size(), _cards.size()]
 		)
 	else:
 		push_error("[ContentRegistry] Boot load failed — critical content missing")
@@ -31,15 +34,18 @@ func _ready() -> void:
 func load_all() -> bool:
 	_species.clear()
 	_apes.clear()
+	_cards.clear()
 	_economy = null
 	_loaded = false
 
 	var species_ok := _load_species()
 	var apes_ok := _load_apes()
+	var cards_ok := _load_cards()
 	var economy_ok := _load_economy()
-	if not (species_ok and apes_ok and economy_ok):
+	if not (species_ok and apes_ok and cards_ok and economy_ok):
 		_species.clear()
 		_apes.clear()
+		_cards.clear()
 		_economy = null
 		_loaded = false
 		return false
@@ -95,6 +101,81 @@ func get_economy() -> EconomyDef:
 		push_warning("[ContentRegistry] Economy not loaded")
 		return null
 	return _economy.duplicate(true) as EconomyDef
+
+
+func get_card(card_id: String):
+	if not _cards.has(card_id):
+		push_warning("[ContentRegistry] Unknown card id: %s" % card_id)
+		return null
+	return (_cards[card_id] as CardDefScript).duplicate(true)
+
+
+func get_stat_cards() -> Array:
+	var cards: Array = []
+	for card in _cards.values():
+		var def = card as CardDefScript
+		if def.type == "stat":
+			cards.append(def.duplicate(true))
+	cards.sort_custom(func(a, b) -> bool: return a.id < b.id)
+	return cards
+
+
+func get_soil_cards() -> Array:
+	var cards: Array = []
+	for card in _cards.values():
+		var def = card as CardDefScript
+		if def.type == "soil":
+			cards.append(def.duplicate(true))
+	cards.sort_custom(func(a, b) -> bool: return a.id < b.id)
+	return cards
+
+
+func _load_cards() -> bool:
+	var entries := _load_json_arrays_from_dir(CARDS_DIR)
+	if entries.is_empty():
+		push_error("[ContentRegistry] Failed to load cards from %s" % CARDS_DIR)
+		return false
+	return _store_card_entries(entries)
+
+
+func _load_json_arrays_from_dir(dir_path: String) -> Array:
+	var dir := DirAccess.open(dir_path)
+	if dir == null:
+		return []
+	var entries: Array = []
+	dir.list_dir_begin()
+	var file_name := dir.get_next()
+	while file_name != "":
+		if not dir.current_is_dir() and file_name.ends_with(".json"):
+			var file_path := dir_path.path_join(file_name)
+			var data: Variant = _parse_json_file(file_path)
+			if typeof(data) == TYPE_ARRAY:
+				for entry in data:
+					if typeof(entry) == TYPE_DICTIONARY:
+						entries.append(entry)
+		file_name = dir.get_next()
+	dir.list_dir_end()
+	return entries
+
+
+func _store_card_entries(entries: Array) -> bool:
+	var loaded := 0
+	for entry in entries:
+		if typeof(entry) != TYPE_DICTIONARY:
+			continue
+		var def = CardDefScript.from_dict(entry)
+		if def == null:
+			continue
+		if _cards.has(def.id):
+			push_error("[ContentRegistry] Duplicate card id: %s" % def.id)
+			continue
+		_cards[def.id] = def
+		loaded += 1
+	if loaded == 0:
+		push_error("[ContentRegistry] No valid cards loaded")
+		_cards.clear()
+		return false
+	return true
 
 
 func _load_economy() -> bool:

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "stat_atk_red",
+    "type": "stat",
+    "stat_key": "attack_pct",
+    "value_pct": 0.15,
+    "clan": "red",
+    "display_name": "Red Fury",
+    "summary": "+15% ATK for Red clan plants this run.",
+    "hover_detail": "Stacks with other stat cards up to +40%."
+  },
+  {
+    "id": "stat_def_red",
+    "type": "stat",
+    "stat_key": "defense_pct",
+    "value_pct": 0.15,
+    "clan": "red",
+    "display_name": "Red Bark",
+    "summary": "+15% DEF for Red clan plants this run.",
+    "hover_detail": "Same-clan buff only — peanut, cashew, teak on Red soil."
+  },
+  {
+    "id": "stat_grow_red",
+    "type": "stat",
+    "stat_key": "grow_speed_pct",
+    "value_pct": 0.12,
+    "clan": "red",
+    "display_name": "Red Growth",
+    "summary": "+12% grow speed for Red clan plants this run.",
+    "hover_detail": "Care actions still apply; this buffs growth tick rate."
+  },
+  {
+    "id": "stat_resist_red",
+    "type": "stat",
+    "stat_key": "diss_resist_pct",
+    "value_pct": 0.10,
+    "clan": "red",
+    "display_name": "Red Calm",
+    "summary": "+10% dissatisfaction resist for Red clan plants.",
+    "hover_detail": "Helps hold the line when HR Apes pressure morale."
+  }
+]

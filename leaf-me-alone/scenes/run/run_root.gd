@@ -6,7 +6,7 @@ const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 const GridDataRes := preload("res://scripts/data/grid_data.gd")
-const CardPickStubDataRes := preload("res://scripts/systems/card_pick_stub_data.gd")
+const CardSystemRes := preload("res://scripts/systems/card_system.gd")
 const MAIN_MENU_SCENE := "res://scenes/main/main_menu.tscn"
 
 const PAUSE_VISIBLE_MAP_WIDTH := 1248.0
@@ -184,7 +184,7 @@ func _show_card_pick_overlay() -> void:
 		push_error("RunRoot: CardPickOverlay missing")
 		return
 	var wave_index := RunManager.run_state.wave_index
-	var options := CardPickStubDataRes.build_options_for_wave(
+	var options := CardSystemRes.build_options_for_wave(
 		wave_index,
 		RunManager.run_state.master_seed
 	)

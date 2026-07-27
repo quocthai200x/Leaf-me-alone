@@ -1,0 +1,18 @@
+[
+  {
+    "id": "soil_terraform_red",
+    "type": "soil",
+    "target_soil": 0,
+    "display_name": "Red Soil Patch",
+    "summary": "Terraform one tile to Red soil for this run.",
+    "hover_detail": "Single tile targeting in Story 6.3."
+  },
+  {
+    "id": "soil_terraform_fertile",
+    "type": "soil",
+    "target_soil": 1,
+    "display_name": "Fertile Patch",
+    "summary": "Terraform one tile to fertile soil for this run.",
+    "hover_detail": "Placeholder soil type for greybox pick UI."
+  }
+]

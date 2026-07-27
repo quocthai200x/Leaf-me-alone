@@ -4,6 +4,7 @@ extends Node
 ## Events listened: none
 
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
+const SoilTypeRes := preload("res://scripts/data/soil_type.gd")
 
 const PEANUT_ID := "peanut"
 const CASHEW_ID := "cashew"
@@ -35,6 +36,9 @@ func get_combat_stats(cell: Vector2i) -> Dictionary:
 		var buff := _get_n_fixation_buff(cell)
 		attack = roundi(float(attack) * (1.0 + float(buff.get("attack_pct", 0.0))))
 		defense = roundi(float(defense) * (1.0 + float(buff.get("defense_pct", 0.0))))
+		var run_buff := _get_run_stat_buffs(species)
+		attack = roundi(float(attack) * (1.0 + float(run_buff.get("attack_pct", 0.0))))
+		defense = roundi(float(defense) * (1.0 + float(run_buff.get("defense_pct", 0.0))))
 	return {
 		"species_id": species_id,
 		"attack": attack,
@@ -90,6 +94,16 @@ func has_adjacent_peanut(cell: Vector2i) -> bool:
 		if grid.get_plant_species_id(neighbor) == PEANUT_ID:
 			return true
 	return false
+
+
+func _get_run_stat_buffs(species: SpeciesDef) -> Dictionary:
+	if species == null or species.preferred_soil != SoilTypeRes.Type.RED:
+		return {"attack_pct": 0.0, "defense_pct": 0.0}
+	var run_state := RunManager.run_state
+	return {
+		"attack_pct": run_state.get_stat_buff("attack_pct"),
+		"defense_pct": run_state.get_stat_buff("defense_pct"),
+	}
 
 
 func _get_n_fixation_buff(cell: Vector2i) -> Dictionary:

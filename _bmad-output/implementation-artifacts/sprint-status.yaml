@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-07-26T16:01:00+07:00
-last_updated: 2026-07-27T23:55:00+07:00
+last_updated: 2026-07-28T00:00:00+07:00
 project: snake-rougelike
 project_key: NOKEY
 tracking_system: file-system
@@ -92,7 +92,7 @@ development_status:
   epic-5-retrospective: optional
   epic-6: in-progress
   6-1-card-pick-trigger-and-overlay-ui: done
-  6-2-stat-cards-via-cardeffectapplier: backlog
+  6-2-stat-cards-via-cardeffectapplier: done
   6-3-soil-terraform-card-single-tile: backlog
   6-4-cardpickphase-state-integration: backlog
   epic-6-retrospective: optional

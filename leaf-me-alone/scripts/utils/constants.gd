@@ -7,6 +7,15 @@ const DEBUG_WAVE_DURATIONS_SEC: Array[float] = [3.0, 3.6, 4.2, 4.8, 6.0]
 
 const MAX_COMBAT_WAVES := 5
 
+# Card stat stacking (Story 6.2, GDD A-15)
+const MAX_CARD_STACK := 0.40
+const STAT_BUFF_KEYS: Array[String] = [
+	"attack_pct",
+	"defense_pct",
+	"grow_speed_pct",
+	"diss_resist_pct",
+]
+
 # Wave spawn pacing (Story 4.2)
 const WAVE_HP_MULTIPLIERS: Array[float] = [1.0, 1.2, 1.4, 1.6, 2.0]
 const APE_SPAWN_INTERVAL_SEC := 15.0

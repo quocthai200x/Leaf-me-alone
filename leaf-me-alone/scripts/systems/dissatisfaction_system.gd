@@ -11,6 +11,7 @@ const DissatisfactionThresholdRes := preload(
 	"res://scripts/systems/dissatisfaction_threshold.gd"
 )
 const PrBillboardLogicRes := preload("res://scripts/systems/pr_billboard_logic.gd")
+const SoilTypeRes := preload("res://scripts/data/soil_type.gd")
 
 var _pause_care: Dictionary = {}
 var _combat_tick_timer: float = 0.0
@@ -134,7 +135,7 @@ func _apply_missed_care_penalties() -> void:
 		)
 		if delta <= 0:
 			continue
-		grid.adjust_plant_dissatisfaction(cell, delta)
+		grid.adjust_plant_dissatisfaction(cell, _scaled_diss_delta(cell, delta))
 		changed = true
 	if changed:
 		_emit_dissatisfaction_updated()
@@ -159,7 +160,7 @@ func _apply_environmental_dissatisfaction() -> void:
 			)
 			if delta <= 0:
 				continue
-			grid.adjust_plant_dissatisfaction(pos, delta)
+			grid.adjust_plant_dissatisfaction(pos, _scaled_diss_delta(pos, delta))
 			changed = true
 	if changed:
 		_emit_dissatisfaction_updated()
@@ -180,7 +181,10 @@ func _apply_billboard_dissatisfaction() -> void:
 				continue
 			if not PrBillboardLogicRes.is_in_aoe(pos, _billboards):
 				continue
-			grid.adjust_plant_dissatisfaction(pos, GameConstantsRes.PR_BILLBOARD_DISSATISFACTION_DELTA)
+			grid.adjust_plant_dissatisfaction(
+				pos,
+				_scaled_diss_delta(pos, GameConstantsRes.PR_BILLBOARD_DISSATISFACTION_DELTA)
+			)
 			changed = true
 	if changed:
 		_emit_dissatisfaction_updated()
@@ -205,6 +209,21 @@ func _check_flee_thresholds() -> void:
 			)
 			if DissatisfactionThresholdRes.should_flee(dissat, threshold):
 				trigger_flee(cell)
+
+
+func _scaled_diss_delta(cell: Vector2i, delta: int) -> int:
+	if delta <= 0:
+		return delta
+	var grid := RunManager.grid_data
+	if grid == null or not grid.has_plant(cell):
+		return delta
+	var species := ContentRegistry.get_species(grid.get_plant_species_id(cell))
+	if species == null or species.preferred_soil != SoilTypeRes.Type.RED:
+		return delta
+	var resist := RunManager.run_state.get_stat_buff("diss_resist_pct")
+	if resist <= 0.0:
+		return delta
+	return maxi(1, roundi(float(delta) * (1.0 - resist)))
 
 
 func trigger_flee(cell: Vector2i) -> void:
