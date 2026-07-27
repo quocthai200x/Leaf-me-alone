@@ -6,12 +6,17 @@ const GridDataRes := preload("res://scripts/data/grid_data.gd")
 const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 
 var _state: int = RunStateEnum.State.MainMenu
+var _previous_state: int = RunStateEnum.State.MainMenu
 var run_state: RunState = RunState.new()
 var grid_data: GridDataRes
 
 
 func get_state() -> int:
 	return _state
+
+
+func get_previous_state() -> int:
+	return _previous_state
 
 
 func get_current_wave_duration() -> float:
@@ -118,6 +123,9 @@ func try_declare_run_win() -> void:
 
 
 func complete_card_pick() -> bool:
+	if _state != RunStateEnum.State.CardPickPhase:
+		push_warning("RunManager.complete_card_pick blocked — not in CardPickPhase")
+		return false
 	if not can_transition_to(RunStateEnum.State.PausePhase):
 		return false
 	transition_to(RunStateEnum.State.PausePhase)
@@ -133,6 +141,8 @@ func can_transition_to(to_state: int) -> bool:
 		[RunStateEnum.State.PausePhase, RunStateEnum.State.CombatPhase]:
 			return run_state.wave_index < GameConstantsRes.MAX_COMBAT_WAVES
 		[RunStateEnum.State.CombatPhase, RunStateEnum.State.PausePhase]:
+			if run_state.wave_index == 2 or run_state.wave_index == 4:
+				return false
 			return true
 		[RunStateEnum.State.CombatPhase, RunStateEnum.State.CardPickPhase]:
 			return run_state.wave_index == 2 or run_state.wave_index == 4
@@ -140,6 +150,8 @@ func can_transition_to(to_state: int) -> bool:
 			return true
 		[RunStateEnum.State.CardPickPhase, RunStateEnum.State.PausePhase]:
 			return true
+		[RunStateEnum.State.CardPickPhase, RunStateEnum.State.CombatPhase]:
+			return false
 		[RunStateEnum.State.RunEnd, RunStateEnum.State.MainMenu]:
 			return true
 		_:
@@ -151,6 +163,7 @@ func transition_to(new_state: int) -> void:
 		push_warning("Blocked transition: %s -> %s" % [_state, new_state])
 		return
 	var old_state := _state
+	_previous_state = old_state
 	_state = new_state
 	print("[RunManager] %s -> %s" % [RunStateEnum.State.keys()[old_state], RunStateEnum.State.keys()[new_state]])
 	EventBus.emit_run_event(
@@ -185,6 +198,7 @@ func enter_main_menu() -> void:
 func _apply_main_menu_state() -> void:
 	run_state = RunState.new()
 	grid_data = null
+	_previous_state = RunStateEnum.State.MainMenu
 	_state = RunStateEnum.State.MainMenu
 
 

@@ -49,7 +49,7 @@ func _ready() -> void:
 	_init_pathfinding(grid)
 	_apply_phase_ui(RunManager.get_state())
 	_update_status()
-	_handle_pause_entry()
+	_handle_pause_entry(-1)
 
 
 func _process(delta: float) -> void:
@@ -161,7 +161,8 @@ func _on_run_event(event: int, payload: Variant) -> void:
 				if _structure_hp_system.can_apply_between_wave_restoration():
 					if _structure_hp_system.has_method("apply_between_wave_restoration_stub"):
 						_structure_hp_system.apply_between_wave_restoration_stub()
-		_handle_pause_entry()
+		var from_state: int = int(data.get("from", -1))
+		_handle_pause_entry(from_state)
 	elif to_state == RunStateEnumRes.State.CardPickPhase:
 		if _wave_spawner.has_method("stop_wave"):
 			_wave_spawner.stop_wave()
@@ -175,13 +176,16 @@ func _on_run_event(event: int, payload: Variant) -> void:
 	_update_status()
 
 
-func _handle_pause_entry() -> void:
+func _handle_pause_entry(from_state: int = -1) -> void:
 	if RunManager.get_state() != RunStateEnumRes.State.PausePhase:
 		return
 	var wave := RunManager.run_state.wave_index
 	if wave == 0:
 		if _tutorial_system.has_method("start_prep_tutorial"):
 			_tutorial_system.start_prep_tutorial()
+		return
+	if from_state == RunStateEnumRes.State.CardPickPhase:
+		call_deferred("_start_combat_if_ready")
 		return
 	if wave > 0 and wave < GameConstantsRes.MAX_COMBAT_WAVES:
 		call_deferred("_start_combat_if_ready")
