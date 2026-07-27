@@ -48,6 +48,10 @@ const HR_FLEE_THRESHOLD := 50
 const HR_MODIFIER_DEFAULT_RADIUS_TILES := 3
 const HR_STING_COOLDOWN_SEC := 5.0
 
+# PR billboards (Story 4.5)
+const PR_BILLBOARD_RADIUS_TILES := 3
+const PR_BILLBOARD_DISSATISFACTION_DELTA := 10
+
 # Flee sequence timing (Story 3.4)
 const FLEE_ANGRY_PHASE_SEC := 0.35
 const FLEE_RUN_PHASE_SEC := 0.45

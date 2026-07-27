@@ -10,10 +10,12 @@ const DissatisfactionCauseLogicRes := preload(
 const DissatisfactionThresholdRes := preload(
 	"res://scripts/systems/dissatisfaction_threshold.gd"
 )
+const PrBillboardLogicRes := preload("res://scripts/systems/pr_billboard_logic.gd")
 
 var _pause_care: Dictionary = {}
 var _combat_tick_timer: float = 0.0
 var _hr_modifiers: Array = []
+var _billboards: Array = []
 var _flee_pending_cells: Dictionary = {}
 var active_flee_count: int = 0
 
@@ -31,6 +33,7 @@ func _process(delta: float) -> void:
 		return
 	_combat_tick_timer = GameConstantsRes.get_dissatisfaction_combat_tick_sec()
 	_apply_environmental_dissatisfaction()
+	_apply_billboard_dissatisfaction()
 
 
 func register_hr_modifier(center: Vector2i, radius: int = -1) -> void:
@@ -48,6 +51,21 @@ func get_hr_modifiers() -> Array:
 	return _hr_modifiers.duplicate(true)
 
 
+func register_billboard(center: Vector2i, radius: int = -1) -> void:
+	var effective_radius := radius
+	if effective_radius < 0:
+		effective_radius = GameConstantsRes.PR_BILLBOARD_RADIUS_TILES
+	_billboards.append({"center": center, "radius": effective_radius})
+
+
+func clear_billboards() -> void:
+	_billboards.clear()
+
+
+func get_billboards() -> Array:
+	return _billboards.duplicate(true)
+
+
 func _on_run_event(event: int, payload: Variant) -> void:
 	if event == RunEventRes.Type.PLANT_CARED:
 		var care_payload: Dictionary = payload
@@ -63,6 +81,7 @@ func _on_run_event(event: int, payload: Variant) -> void:
 	var to_state: int = int(state_payload.get("to", -1))
 	if to_state == RunStateEnumRes.State.PausePhase:
 		_reset_pause_care_tracking()
+		clear_billboards()
 	elif to_state == RunStateEnumRes.State.CombatPhase:
 		_apply_missed_care_penalties()
 		_combat_tick_timer = 0.0
@@ -141,6 +160,27 @@ func _apply_environmental_dissatisfaction() -> void:
 			if delta <= 0:
 				continue
 			grid.adjust_plant_dissatisfaction(pos, delta)
+			changed = true
+	if changed:
+		_emit_dissatisfaction_updated()
+	_check_flee_thresholds()
+
+
+func _apply_billboard_dissatisfaction() -> void:
+	if _billboards.is_empty():
+		return
+	var grid := RunManager.grid_data
+	if grid == null:
+		return
+	var changed := false
+	for y in grid.height:
+		for x in grid.width:
+			var pos := Vector2i(x, y)
+			if not grid.has_plant(pos):
+				continue
+			if not PrBillboardLogicRes.is_in_aoe(pos, _billboards):
+				continue
+			grid.adjust_plant_dissatisfaction(pos, GameConstantsRes.PR_BILLBOARD_DISSATISFACTION_DELTA)
 			changed = true
 	if changed:
 		_emit_dissatisfaction_updated()
