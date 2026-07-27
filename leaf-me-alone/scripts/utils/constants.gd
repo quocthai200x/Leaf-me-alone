@@ -7,6 +7,13 @@ const DEBUG_WAVE_DURATIONS_SEC: Array[float] = [3.0, 3.6, 4.2, 4.8, 6.0]
 
 const MAX_COMBAT_WAVES := 5
 
+# Wave spawn pacing (Story 4.2)
+const WAVE_HP_MULTIPLIERS: Array[float] = [1.0, 1.2, 1.4, 1.6, 2.0]
+const APE_SPAWN_INTERVAL_SEC := 15.0
+const APE_BURST_INTERVAL_SEC := 60.0
+const DEBUG_APE_SPAWN_INTERVAL_SEC := 1.5
+const DEBUG_APE_BURST_INTERVAL_SEC := 6.0
+
 # Ape pooling & display (Story 4.1)
 const APE_POOL_SIZE := 35
 const APE_TILE_SIZE := 16
@@ -79,3 +86,20 @@ static func get_flee_run_phase_sec() -> float:
 	if OS.is_debug_build():
 		return DEBUG_FLEE_RUN_PHASE_SEC
 	return FLEE_RUN_PHASE_SEC
+
+
+static func get_ape_spawn_interval_sec() -> float:
+	if OS.is_debug_build():
+		return DEBUG_APE_SPAWN_INTERVAL_SEC
+	return APE_SPAWN_INTERVAL_SEC
+
+
+static func get_ape_burst_interval_sec() -> float:
+	if OS.is_debug_build():
+		return DEBUG_APE_BURST_INTERVAL_SEC
+	return APE_BURST_INTERVAL_SEC
+
+
+static func get_wave_hp_multiplier(wave_number: int) -> float:
+	var idx := clampi(wave_number - 1, 0, WAVE_HP_MULTIPLIERS.size() - 1)
+	return WAVE_HP_MULTIPLIERS[idx]

@@ -92,7 +92,8 @@ func _handle_ape_spawned(payload: Variant) -> void:
 	var role_def := ContentRegistry.get_ape(ape_id)
 	var spawn_cell: Vector2i = data.get("spawn_cell", Vector2i.ZERO)
 	var move_mult := float(data.get("move_speed_multiplier", 1.0))
-	ape.configure(role_def, spawn_cell, move_mult)
+	var hp_mult := float(data.get("hp_multiplier", 1.0))
+	ape.configure(role_def, spawn_cell, move_mult, hp_mult)
 
 	var goal := Vector2i.ZERO
 	var route := PackedVector2Array()

@@ -115,9 +115,10 @@ func _on_run_event(event: int, payload: Variant) -> void:
 		_combat_timer = RunManager.get_current_wave_duration()
 		if RunManager.grid_data != null:
 			_init_pathfinding(RunManager.grid_data)
-		if RunManager.run_state.wave_index == 1:
-			if _wave_spawner.has_method("start_wave"):
-				_wave_spawner.start_wave(1)
+		var wave_index := RunManager.run_state.wave_index
+		if _wave_spawner.has_method("start_wave"):
+			_wave_spawner.start_wave(wave_index)
+		if wave_index == 1:
 			if _tutorial_system.has_method("show_dissatisfaction_prompt"):
 				_tutorial_system.show_dissatisfaction_prompt()
 	elif to_state == RunStateEnumRes.State.PausePhase:

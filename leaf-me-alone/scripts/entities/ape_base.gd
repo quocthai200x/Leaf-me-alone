@@ -9,6 +9,8 @@ var state: State = State.DEAD
 var grid_cell: Vector2i = Vector2i.ZERO
 var goal_cell: Vector2i = Vector2i.ZERO
 var role_id: String = ""
+var max_hp: int = 0
+var current_hp: int = 0
 
 var _role_def: ApeRoleDef
 var _path: PackedVector2Array = PackedVector2Array()
@@ -21,11 +23,18 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_DISABLED
 
 
-func configure(role_def: ApeRoleDef, spawn_cell: Vector2i, move_speed_multiplier: float) -> void:
+func configure(
+	role_def: ApeRoleDef,
+	spawn_cell: Vector2i,
+	move_speed_multiplier: float,
+	hp_multiplier: float = 1.0
+) -> void:
 	_role_def = role_def
 	role_id = role_def.id
 	grid_cell = spawn_cell
 	_move_speed_multiplier = move_speed_multiplier
+	max_hp = int(round(float(role_def.hp) * hp_multiplier))
+	current_hp = max_hp
 	_recompute_speed()
 	_reset_path()
 
@@ -59,6 +68,8 @@ func despawn() -> void:
 	state = State.DEAD
 	visible = false
 	role_id = ""
+	max_hp = 0
+	current_hp = 0
 	_role_def = null
 	_reset_path()
 

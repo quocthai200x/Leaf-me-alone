@@ -1,0 +1,61 @@
+[
+  {
+    "wave_number": 1,
+    "tutorial": true,
+    "interval_sec": 2.5,
+    "burst_interval_sec": 60,
+    "initial_delay_sec": 4.0,
+    "spawns": [{ "ape_id": "saw_ape", "count": 8 }],
+    "burst_spawns": []
+  },
+  {
+    "wave_number": 2,
+    "tutorial": false,
+    "interval_sec": 15,
+    "burst_interval_sec": 60,
+    "initial_delay_sec": 2,
+    "spawns": [
+      { "ape_id": "saw_ape", "count": 6 },
+      { "ape_id": "hr_ape", "count": 2 }
+    ],
+    "burst_spawns": [{ "ape_id": "saw_ape", "count": 1 }]
+  },
+  {
+    "wave_number": 3,
+    "tutorial": false,
+    "interval_sec": 15,
+    "burst_interval_sec": 60,
+    "initial_delay_sec": 2,
+    "spawns": [
+      { "ape_id": "saw_ape", "count": 5 },
+      { "ape_id": "pr_ape", "count": 3 }
+    ],
+    "burst_spawns": []
+  },
+  {
+    "wave_number": 4,
+    "tutorial": false,
+    "interval_sec": 15,
+    "burst_interval_sec": 60,
+    "initial_delay_sec": 2,
+    "spawns": [
+      { "ape_id": "saw_ape", "count": 4 },
+      { "ape_id": "hr_ape", "count": 2 },
+      { "ape_id": "pr_ape", "count": 2 }
+    ],
+    "burst_spawns": []
+  },
+  {
+    "wave_number": 5,
+    "tutorial": false,
+    "interval_sec": 15,
+    "burst_interval_sec": 60,
+    "initial_delay_sec": 2,
+    "spawns": [
+      { "ape_id": "saw_ape", "count": 6 },
+      { "ape_id": "hr_ape", "count": 2 },
+      { "ape_id": "pr_ape", "count": 1 }
+    ],
+    "burst_spawns": []
+  }
+]
