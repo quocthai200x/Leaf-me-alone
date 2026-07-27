@@ -95,3 +95,31 @@ theme_override_colors/font_color = Color(1, 0.278431, 0.341176, 1)
 theme_override_font_sizes/font_size = 20
 text = "Teak has resigned effective immediately"
 horizontal_alignment = 1
+
+[node name="DogecoinChip" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 68.0
+grow_horizontal = 0
+
+[node name="HBox" type="HBoxContainer" parent="DogecoinChip"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DogecoinIcon" type="Label" parent="DogecoinChip/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Ð"
+
+[node name="DogecoinValue" type="Label" parent="DogecoinChip/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "0"

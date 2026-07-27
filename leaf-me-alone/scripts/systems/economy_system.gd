@@ -65,6 +65,8 @@ func _ensure_run_wallet_initialized() -> void:
 
 func _on_run_event(event: int, payload: Variant) -> void:
 	if event == RunEventRes.Type.APE_KILLED:
+		if RunManager.get_state() != RunStateEnumRes.State.CombatPhase:
+			return
 		var data: Dictionary = payload
 		var drop := int(data.get("drop_amount", 0))
 		if drop > 0:
