@@ -1,7 +1,7 @@
 extends Node
 ## Run-scoped Dogecoin wallet — sole mutator of RunManager.run_state.dogecoin.
 ## Events emitted: DOGECOIN_CHANGED (via EventBus)
-## Events listened: STATE_CHANGED (reset guard on new run)
+## Events listened: STATE_CHANGED (reset guard on new run), APE_KILLED (role drops)
 
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
@@ -64,6 +64,12 @@ func _ensure_run_wallet_initialized() -> void:
 
 
 func _on_run_event(event: int, payload: Variant) -> void:
+	if event == RunEventRes.Type.APE_KILLED:
+		var data: Dictionary = payload
+		var drop := int(data.get("drop_amount", 0))
+		if drop > 0:
+			try_earn(drop)
+		return
 	if event != RunEventRes.Type.STATE_CHANGED:
 		return
 	var data: Dictionary = payload

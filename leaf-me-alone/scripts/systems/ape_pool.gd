@@ -112,6 +112,22 @@ func release_ape(ape: Node2D) -> void:
 	_pool.release(ape)
 
 
+func kill_ape(ape: Node2D) -> void:
+	if ape == null or ape.state == ApeBaseScript.State.DEAD:
+		return
+	var drop_amount := GameConstantsRes.get_ape_dogecoin_drop(ape.role_id)
+	EventBus.emit_run_event(
+		RunEventRes.Type.APE_KILLED,
+		{
+			"ape_id": ape.role_id,
+			"cell": ape.grid_cell,
+			"wave": RunManager.run_state.wave_index,
+			"drop_amount": drop_amount,
+		}
+	)
+	release_ape(ape)
+
+
 func _create_ape() -> Node2D:
 	var ape: Node2D = ApeBaseScene.instantiate()
 	if _entities_root != null:

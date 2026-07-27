@@ -19,6 +19,16 @@ const APE_POOL_SIZE := 35
 const APE_TILE_SIZE := 16
 const APE_DISPLAY_SCALE := 3.0
 
+# Saw extraction (Story 4.3)
+const SAW_EXTRACT_DAMAGE := 15
+const SAW_EXTRACT_INTERVAL_SEC := 2.0
+const DEBUG_SAW_EXTRACT_INTERVAL_SEC := 0.25
+const APE_DOGECOIN_DROPS: Dictionary = {
+	"saw_ape": 5,
+	"hr_ape": 15,
+	"pr_ape": 12,
+}
+
 # Dissatisfaction tease (Story 2.9) — flee logic deferred to Epic 3
 const DISSATISFACTION_TEASE_THRESHOLD := 50
 const DISSATISFACTION_METER_THRESHOLD := 50
@@ -103,3 +113,13 @@ static func get_ape_burst_interval_sec() -> float:
 static func get_wave_hp_multiplier(wave_number: int) -> float:
 	var idx := clampi(wave_number - 1, 0, WAVE_HP_MULTIPLIERS.size() - 1)
 	return WAVE_HP_MULTIPLIERS[idx]
+
+
+static func get_saw_extract_interval_sec() -> float:
+	if OS.is_debug_build():
+		return DEBUG_SAW_EXTRACT_INTERVAL_SEC
+	return SAW_EXTRACT_INTERVAL_SEC
+
+
+static func get_ape_dogecoin_drop(ape_id: String) -> int:
+	return int(APE_DOGECOIN_DROPS.get(ape_id, 0))

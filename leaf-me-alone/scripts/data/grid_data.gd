@@ -176,6 +176,14 @@ func remove_plant_from_combat(pos: Vector2i) -> bool:
 func set_depleted_after_flee(pos: Vector2i) -> bool:
 	if not has_plant(pos):
 		return false
+	return set_depleted_after_extraction(pos)
+
+
+func set_depleted_after_extraction(pos: Vector2i) -> bool:
+	if not is_in_bounds(pos):
+		return false
+	if bool(_cells[_index(pos)].get("depleted", false)):
+		return false
 	var cell: Dictionary = _cells[_index(pos)]
 	cell["occupied"] = false
 	cell["depleted"] = true

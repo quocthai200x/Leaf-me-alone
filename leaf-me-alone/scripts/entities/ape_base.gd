@@ -78,6 +78,27 @@ func get_role_def() -> ApeRoleDef:
 	return _role_def
 
 
+func take_damage(amount: int) -> void:
+	if state == State.DEAD or amount <= 0:
+		return
+	current_hp = maxi(current_hp - amount, 0)
+	if current_hp <= 0:
+		_request_death()
+
+
+func _request_death() -> void:
+	if state == State.DEAD:
+		return
+	var pools := get_tree().get_nodes_in_group("ape_pool")
+	if pools.is_empty():
+		state = State.DEAD
+		visible = false
+		return
+	var pool: Node = pools[0]
+	if pool.has_method("kill_ape"):
+		pool.kill_ape(self)
+
+
 func _process(delta: float) -> void:
 	if state != State.PATH:
 		return
