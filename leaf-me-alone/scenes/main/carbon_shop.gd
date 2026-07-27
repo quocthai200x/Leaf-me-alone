@@ -25,6 +25,10 @@ func close_shop() -> void:
 	visible = false
 
 
+func open_overlay() -> void:
+	open_shop()
+
+
 func _refresh_ui() -> void:
 	if _balance_label != null:
 		_balance_label.text = "CC %d" % SaveManager.get_carbon_credit()

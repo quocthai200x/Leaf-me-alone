@@ -128,3 +128,4 @@ Label/carbon_credit/colors/font_color = Color(0.419608, 0.796078, 0.666667, 1)
 Label/carbon_credit/font_sizes/font_size = 18
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel_container")
 PanelContainer/pause_panel/styles/panel = SubResource("StyleBoxFlat_pause_panel")
+PanelContainer/hub_panel/styles/panel = SubResource("StyleBoxFlat_pause_panel")
