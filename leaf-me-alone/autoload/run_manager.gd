@@ -62,11 +62,59 @@ func on_combat_timer_expired() -> void:
 		return
 	print("[RunManager] Combat wave %d timer expired" % run_state.wave_index)
 	if run_state.wave_index >= GameConstantsRes.MAX_COMBAT_WAVES:
-		transition_to(RunStateEnum.State.RunEnd)
+		if run_state.director_defeated:
+			declare_run_win()
+		else:
+			declare_run_loss("director_survived")
 	elif run_state.wave_index == 2 or run_state.wave_index == 4:
 		transition_to(RunStateEnum.State.CardPickPhase)
 	else:
 		transition_to(RunStateEnum.State.PausePhase)
+
+
+func declare_run_loss(reason: String) -> void:
+	if _state != RunStateEnum.State.CombatPhase:
+		return
+	if not can_transition_to(RunStateEnum.State.RunEnd):
+		return
+	run_state.run_outcome = "loss"
+	run_state.loss_reason = reason
+	EventBus.emit_run_event(
+		RunEvent.Type.RUN_LOST,
+		{
+			"reason": reason,
+			"wave_index": run_state.wave_index,
+			"waves_cleared": maxi(run_state.wave_index - 1, 0),
+			"seed": run_state.master_seed,
+		}
+	)
+	transition_to(RunStateEnum.State.RunEnd)
+
+
+func declare_run_win() -> void:
+	if _state != RunStateEnum.State.CombatPhase:
+		return
+	if not can_transition_to(RunStateEnum.State.RunEnd):
+		return
+	run_state.run_outcome = "win"
+	run_state.loss_reason = ""
+	EventBus.emit_run_event(
+		RunEvent.Type.RUN_WON,
+		{
+			"wave_index": run_state.wave_index,
+			"waves_cleared": run_state.wave_index,
+			"seed": run_state.master_seed,
+		}
+	)
+	transition_to(RunStateEnum.State.RunEnd)
+
+
+func try_declare_run_win() -> void:
+	if run_state.wave_index != GameConstantsRes.MAX_COMBAT_WAVES:
+		return
+	if not run_state.director_defeated:
+		return
+	declare_run_win()
 
 
 func complete_card_pick() -> bool:
@@ -89,7 +137,7 @@ func can_transition_to(to_state: int) -> bool:
 		[RunStateEnum.State.CombatPhase, RunStateEnum.State.CardPickPhase]:
 			return run_state.wave_index == 2 or run_state.wave_index == 4
 		[RunStateEnum.State.CombatPhase, RunStateEnum.State.RunEnd]:
-			return run_state.wave_index >= GameConstantsRes.MAX_COMBAT_WAVES
+			return true
 		[RunStateEnum.State.CardPickPhase, RunStateEnum.State.PausePhase]:
 			return true
 		[RunStateEnum.State.RunEnd, RunStateEnum.State.MainMenu]:

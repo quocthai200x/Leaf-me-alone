@@ -23,6 +23,7 @@ const COMBAT_VISIBLE_MAP_WIDTH := 1920.0
 @onready var _dissatisfaction_system: Node = $DissatisfactionSystem
 @onready var _pathfinding_service: Node = $PathfindingService
 @onready var _structure_hp_system: Node = $StructureHpSystem
+@onready var _run_end_overlay: Control = %RunEndOverlay
 
 var _combat_timer: float = 0.0
 
@@ -143,6 +144,10 @@ func _on_run_event(event: int, payload: Variant) -> void:
 		_handle_pause_entry()
 	elif to_state == RunStateEnumRes.State.CardPickPhase:
 		call_deferred("_complete_card_pick_stub")
+	elif to_state == RunStateEnumRes.State.RunEnd:
+		if _wave_spawner.has_method("stop_wave"):
+			_wave_spawner.stop_wave()
+		_show_run_end_overlay()
 
 	_apply_phase_ui(to_state)
 	_update_status()
@@ -174,6 +179,24 @@ func _complete_card_pick_stub() -> void:
 	RunManager.complete_card_pick()
 
 
+func _show_run_end_overlay() -> void:
+	if _run_end_overlay == null:
+		return
+	var outcome := RunManager.run_state.run_outcome
+	if outcome.is_empty():
+		outcome = "loss"
+	var waves_cleared := RunManager.run_state.wave_index
+	if outcome == "loss":
+		waves_cleared = maxi(RunManager.run_state.wave_index - 1, 0)
+	if _run_end_overlay.has_method("show_run_end"):
+		_run_end_overlay.show_run_end(
+			outcome,
+			RunManager.run_state.loss_reason,
+			RunManager.run_state.master_seed,
+			waves_cleared
+		)
+
+
 func _init_pathfinding(grid: GridDataRes) -> void:
 	if _pathfinding_service != null and _pathfinding_service.has_method("initialize_from_grid"):
 		_pathfinding_service.initialize_from_grid(grid)
@@ -182,10 +205,14 @@ func _init_pathfinding(grid: GridDataRes) -> void:
 func _apply_phase_ui(state: int) -> void:
 	var is_pause := state == RunStateEnumRes.State.PausePhase
 	var is_combat := state == RunStateEnumRes.State.CombatPhase
+	var is_run_end := state == RunStateEnumRes.State.RunEnd
 
-	_map_dim_overlay.visible = is_pause
-	_pause_panel.visible = is_pause
-	_combat_hud.visible = is_combat
+	_map_dim_overlay.visible = is_pause and not is_run_end
+	_pause_panel.visible = is_pause and not is_run_end
+	_combat_hud.visible = is_combat and not is_run_end
+	if _run_end_overlay != null:
+		if not is_run_end and _run_end_overlay.has_method("hide_overlay"):
+			_run_end_overlay.hide_overlay()
 	if _map_view.has_method("set_combat_phase"):
 		_map_view.set_combat_phase(is_combat)
 	if RunManager.grid_data != null and _map_view.has_method("sync_dissatisfaction_indicators"):

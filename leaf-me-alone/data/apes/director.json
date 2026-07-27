@@ -1,0 +1,7 @@
+{
+  "id": "director",
+  "display_name": "Director",
+  "hp": 400,
+  "speed": 55,
+  "role": "director"
+}

@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-07-26T16:01:00+07:00
-last_updated: 2026-07-27T23:30:00+07:00
+last_updated: 2026-07-27T23:45:00+07:00
 project: snake-rougelike
 project_key: NOKEY
 tracking_system: file-system
@@ -82,13 +82,13 @@ development_status:
   4-6-dogecoin-earn-on-ape-defeat: done
   4-7-combat-hud-structure-hp-and-wave-banner: done
   epic-4-retrospective: optional
-  epic-5: in-progress
+  epic-5: done
   5-1-forest-core-and-root-nest-placement: done
-  5-2-structure-damage-and-loss-conditions: backlog
-  5-3-run-end-loss-path-and-seed-display: backlog
-  5-4-director-spawn-and-mission-type-b: backlog
-  5-5-run-win-on-director-defeat: backlog
-  5-6-runend-overlay-integration-with-runmanager: backlog
+  5-2-structure-damage-and-loss-conditions: done
+  5-3-run-end-loss-path-and-seed-display: done
+  5-4-director-spawn-and-mission-type-b: done
+  5-5-run-win-on-director-defeat: done
+  5-6-runend-overlay-integration-with-runmanager: done
   epic-5-retrospective: optional
   epic-6: backlog
   6-1-card-pick-trigger-and-overlay-ui: backlog

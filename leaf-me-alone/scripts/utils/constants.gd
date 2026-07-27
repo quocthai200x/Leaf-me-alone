@@ -27,6 +27,7 @@ const APE_DOGECOIN_DROPS: Dictionary = {
 	"saw_ape": 5,
 	"hr_ape": 15,
 	"pr_ape": 12,
+	"director": 50,
 }
 
 # Dissatisfaction tease (Story 2.9) — flee logic deferred to Epic 3
@@ -52,10 +53,32 @@ const HR_STING_COOLDOWN_SEC := 5.0
 const PR_BILLBOARD_RADIUS_TILES := 3
 const PR_BILLBOARD_DISSATISFACTION_DELTA := 10
 
-# Structure HP stubs (Story 4.7) — damage deferred to Epic 5
+# Structure HP stubs (Story 4.7) — damage in Story 5.2
 const FOREST_CORE_MAX_HP := 500
 const ROOT_NEST_MAX_HP := 200
 const STRUCTURE_DANGER_HP_RATIO := 0.25
+const STRUCTURE_ATTACK_DAMAGE := 15
+const STRUCTURE_ATTACK_INTERVAL_SEC := 2.0
+const DEBUG_STRUCTURE_ATTACK_INTERVAL_SEC := 0.25
+const STRUCTURE_DAMAGE_BY_ROLE: Dictionary = {
+	"saw_ape": 15,
+	"hr_ape": 10,
+	"pr_ape": 12,
+	"director": 25,
+}
+
+# Run End preview (Stories 5.3, 5.5)
+const RUN_END_CC_WIN_PREVIEW := 125
+const RUN_END_CC_LOSS_BASE := 20
+const RUN_END_CC_LOSS_PER_WAVE := 15
+const RUN_END_CC_LOSS_CAP := 80
+
+# Director boss (Story 5.4)
+const DIRECTOR_BANNER_TEXT := "Director inbound — quarterly performance review."
+const DIRECTOR_SPIKE_TELEGRAPH_SEC := 2.0
+const DIRECTOR_SPIKE_DURATION_SEC := 10.0
+const DIRECTOR_SPIKE_RADIUS_TILES := 5
+const DIRECTOR_SPIKE_DISSATISFACTION := 30
 const WAVE_BANNER_DURATION_SEC := 3.0
 const SLICE_WAVES_PATH := "res://data/waves/slice_waves.json"
 
@@ -132,6 +155,12 @@ static func get_saw_extract_interval_sec() -> float:
 	if OS.is_debug_build():
 		return DEBUG_SAW_EXTRACT_INTERVAL_SEC
 	return SAW_EXTRACT_INTERVAL_SEC
+
+
+static func get_structure_attack_interval_sec() -> float:
+	if OS.is_debug_build():
+		return DEBUG_STRUCTURE_ATTACK_INTERVAL_SEC
+	return STRUCTURE_ATTACK_INTERVAL_SEC
 
 
 static func get_ape_dogecoin_drop(ape_id: String) -> int:

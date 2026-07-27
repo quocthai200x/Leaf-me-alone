@@ -1,6 +1,6 @@
 class_name StructureHpLogic
 extends RefCounted
-## Structure HP display math (Story 4.7). Damage application deferred to Epic 5.
+## Structure HP display math (Story 4.7). Damage application in Story 5.2.
 
 const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 

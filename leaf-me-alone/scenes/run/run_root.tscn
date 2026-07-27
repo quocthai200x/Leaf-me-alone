@@ -21,6 +21,9 @@
 [ext_resource type="Script" path="res://scripts/systems/hr_ape_system.gd" id="19_hr"]
 [ext_resource type="Script" path="res://scripts/systems/pr_ape_system.gd" id="20_pr"]
 [ext_resource type="Script" path="res://scripts/systems/structure_hp_system.gd" id="21_structure"]
+[ext_resource type="Script" path="res://scripts/systems/structure_damage_system.gd" id="22_struct_dmg"]
+[ext_resource type="Script" path="res://scripts/systems/director_system.gd" id="23_director"]
+[ext_resource type="PackedScene" uid="uid://run_end_overlay" path="res://scenes/run/run_end_overlay.tscn" id="24_run_end"]
 
 [node name="RunRoot" type="Node2D"]
 script = ExtResource("1_run_root")
@@ -83,6 +86,12 @@ script = ExtResource("20_pr")
 [node name="StructureHpSystem" type="Node" parent="."]
 script = ExtResource("21_structure")
 
+[node name="StructureDamageSystem" type="Node" parent="."]
+script = ExtResource("22_struct_dmg")
+
+[node name="DirectorSystem" type="Node" parent="."]
+script = ExtResource("23_director")
+
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="MapDimOverlay" type="ColorRect" parent="UI"]
@@ -98,6 +107,10 @@ unique_name_in_owner = true
 visible = false
 
 [node name="CombatHUD" parent="UI" instance=ExtResource("3_hud")]
+unique_name_in_owner = true
+visible = false
+
+[node name="RunEndOverlay" parent="UI" instance=ExtResource("24_run_end")]
 unique_name_in_owner = true
 visible = false
 

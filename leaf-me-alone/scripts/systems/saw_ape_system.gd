@@ -46,6 +46,9 @@ func _perform_extract(ape: Node) -> void:
 	if target_cell == Vector2i.ZERO:
 		target_cell = ape.grid_cell
 
+	if RunManager.grid_data != null and RunManager.grid_data.has_structure_at(target_cell):
+		return
+
 	var abilities := _get_plant_ability_system()
 	var result: Dictionary = SawExtractionLogicRes.apply_extract_tick(
 		abilities,

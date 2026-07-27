@@ -1,7 +1,9 @@
 extends Node
-## Forest Core + Root Nest HP tracking (Stories 4.7, 5.1).
+## Forest Core + Root Nest HP tracking (Stories 4.7, 5.1, 5.2).
 
+const RunEventRes := preload("res://scripts/data/run_event.gd")
 const StructureHpLogicRes := preload("res://scripts/systems/structure_hp_logic.gd")
+const StructureDamageLogicRes := preload("res://scripts/systems/structure_damage_logic.gd")
 const StructureTypeRes := preload("res://scripts/data/structure_type.gd")
 const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 const GridDataRes := preload("res://scripts/data/grid_data.gd")
@@ -99,6 +101,60 @@ func can_apply_between_wave_restoration() -> bool:
 func apply_between_wave_restoration_stub() -> void:
 	# Story 5.2+ implements actual between-wave restoration via Root Nests.
 	pass
+
+
+func apply_damage_at_cell(cell: Vector2i, amount: int) -> Dictionary:
+	var result := {
+		"applied": false,
+		"destroyed": false,
+		"is_core": false,
+		"structure_id": "",
+	}
+	if amount <= 0:
+		return result
+	var grid := _get_grid_data()
+	if grid == null:
+		return result
+	var grid_result := grid.damage_structure_at(cell, amount)
+	if not bool(grid_result.get("applied", false)):
+		return result
+	result["applied"] = true
+	result["destroyed"] = bool(grid_result.get("destroyed", false))
+	result["structure_id"] = str(grid_result.get("structure_id", ""))
+	var type_id := str(grid_result.get("structure_type", ""))
+	result["is_core"] = type_id == StructureTypeRes.FOREST_CORE
+	var remaining := int(grid_result.get("remaining_hp", 0))
+	if type_id == StructureTypeRes.FOREST_CORE:
+		_core["current_hp"] = remaining
+	elif type_id == StructureTypeRes.ROOT_NEST:
+		for i in _nests.size():
+			if str(_nests[i].get("id", "")) == result["structure_id"]:
+				_nests[i]["current_hp"] = remaining
+				break
+	EventBus.emit_run_event(
+		RunEventRes.Type.STRUCTURE_DAMAGED,
+		{
+			"cell": cell,
+			"amount": amount,
+			"structure_id": result["structure_id"],
+			"is_core": result["is_core"],
+			"destroyed": result["destroyed"],
+			"remaining_hp": remaining,
+		}
+	)
+	_check_loss_conditions()
+	return result
+
+
+func _check_loss_conditions() -> void:
+	var loss_reason := StructureDamageLogicRes.evaluate_loss(
+		int(_core.get("current_hp", 0)),
+		_nests
+	)
+	if loss_reason.is_empty():
+		return
+	if RunManager.has_method("declare_run_loss"):
+		RunManager.declare_run_loss(loss_reason)
 
 
 func _get_grid_data() -> GridDataRes:

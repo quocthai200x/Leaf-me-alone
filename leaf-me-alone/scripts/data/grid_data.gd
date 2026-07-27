@@ -91,6 +91,34 @@ func has_structure_at(pos: Vector2i) -> bool:
 	return int(_cells[_index(pos)].get("structure_ref", -1)) >= 0
 
 
+func damage_structure_at(pos: Vector2i, amount: int) -> Dictionary:
+	var result := {
+		"applied": false,
+		"destroyed": false,
+		"structure_id": "",
+		"structure_type": "",
+		"remaining_hp": 0,
+	}
+	if amount <= 0 or not is_in_bounds(pos):
+		return result
+	var ref := int(_cells[_index(pos)].get("structure_ref", -1))
+	if ref < 0 or ref >= structures.size():
+		return result
+	var entry: Dictionary = structures[ref]
+	var current := int(entry.get("current_hp", 0))
+	if current <= 0:
+		return result
+	var next := maxi(current - amount, 0)
+	entry["current_hp"] = next
+	structures[ref] = entry
+	result["applied"] = true
+	result["structure_id"] = str(entry.get("id", ""))
+	result["structure_type"] = str(entry.get("type", ""))
+	result["remaining_hp"] = next
+	result["destroyed"] = next <= 0
+	return result
+
+
 func get_cell(pos: Vector2i) -> Dictionary:
 	if not is_in_bounds(pos):
 		return {}

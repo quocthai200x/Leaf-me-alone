@@ -27,6 +27,7 @@ var _vignette_tween: Tween
 var _toast_tween: Tween
 var _banner_tween: Tween
 var _danger_pulse_tween: Tween
+var _shake_tween: Tween
 var _core_danger: bool = false
 var _nests_danger: bool = false
 var _banner_home_y: float = 0.0
@@ -85,6 +86,39 @@ func show_wave_banner(wave_index: int) -> void:
 	_banner_tween.chain().tween_callback(func() -> void:
 		_wave_banner.visible = false
 	)
+
+
+func show_boss_banner(message: String) -> void:
+	if _wave_banner == null or _wave_banner_label == null:
+		return
+	if _banner_tween != null and _banner_tween.is_valid():
+		_banner_tween.kill()
+	_wave_banner_label.text = message
+	_wave_banner.visible = true
+	_wave_banner.modulate.a = 0.0
+	_wave_banner.position.y = _banner_home_y - 24.0
+	_play_wave_sting()
+	_banner_tween = create_tween()
+	_banner_tween.set_parallel(true)
+	_banner_tween.tween_property(_wave_banner, "modulate:a", 1.0, 0.25)
+	_banner_tween.tween_property(_wave_banner, "position:y", _banner_home_y, 0.35).set_trans(Tween.TRANS_BACK)
+	_banner_tween.chain().tween_interval(GameConstantsRes.WAVE_BANNER_DURATION_SEC)
+	_banner_tween.chain().tween_property(_wave_banner, "modulate:a", 0.0, 0.25)
+	_banner_tween.chain().tween_callback(func() -> void:
+		_wave_banner.visible = false
+	)
+
+
+func play_core_hit_feedback() -> void:
+	play_flee_vignette()
+	if _shake_tween != null and _shake_tween.is_valid():
+		_shake_tween.kill()
+	var base := position
+	_shake_tween = create_tween()
+	_shake_tween.tween_property(self, "position:x", base.x + 6.0, 0.05)
+	_shake_tween.tween_property(self, "position:x", base.x - 6.0, 0.05)
+	_shake_tween.tween_property(self, "position:x", base.x + 4.0, 0.05)
+	_shake_tween.tween_property(self, "position:x", base.x, 0.05)
 
 
 func refresh_structure_hp() -> void:
@@ -150,6 +184,12 @@ func _on_run_event(event: int, payload: Variant) -> void:
 		var delta := int(data.get("delta", 0))
 		if delta > 0 and RunManager.get_state() == RunStateEnumRes.State.CombatPhase:
 			_play_dogecoin_float(delta)
+		return
+	if event == RunEventRes.Type.STRUCTURE_DAMAGED:
+		var hit: Dictionary = payload
+		refresh_structure_hp()
+		if bool(hit.get("is_core", false)):
+			play_core_hit_feedback()
 		return
 	if event != RunEventRes.Type.STATE_CHANGED:
 		return
