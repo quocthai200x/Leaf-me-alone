@@ -6,6 +6,7 @@ const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const GameConstantsRes := preload("res://scripts/utils/constants.gd")
 const GridDataRes := preload("res://scripts/data/grid_data.gd")
+const CardPickStubDataRes := preload("res://scripts/systems/card_pick_stub_data.gd")
 const MAIN_MENU_SCENE := "res://scenes/main/main_menu.tscn"
 
 const PAUSE_VISIBLE_MAP_WIDTH := 1248.0
@@ -24,6 +25,7 @@ const COMBAT_VISIBLE_MAP_WIDTH := 1920.0
 @onready var _pathfinding_service: Node = $PathfindingService
 @onready var _structure_hp_system: Node = $StructureHpSystem
 @onready var _run_end_overlay: Control = %RunEndOverlay
+@onready var _card_pick_overlay: Control = %CardPickOverlay
 
 var _combat_timer: float = 0.0
 
@@ -143,7 +145,9 @@ func _on_run_event(event: int, payload: Variant) -> void:
 						_structure_hp_system.apply_between_wave_restoration_stub()
 		_handle_pause_entry()
 	elif to_state == RunStateEnumRes.State.CardPickPhase:
-		call_deferred("_complete_card_pick_stub")
+		if _wave_spawner.has_method("stop_wave"):
+			_wave_spawner.stop_wave()
+		_show_card_pick_overlay()
 	elif to_state == RunStateEnumRes.State.RunEnd:
 		if _wave_spawner.has_method("stop_wave"):
 			_wave_spawner.stop_wave()
@@ -175,8 +179,17 @@ func _start_combat_if_ready() -> void:
 		push_error("RunRoot: failed to begin combat wave")
 
 
-func _complete_card_pick_stub() -> void:
-	RunManager.complete_card_pick()
+func _show_card_pick_overlay() -> void:
+	if _card_pick_overlay == null:
+		push_error("RunRoot: CardPickOverlay missing")
+		return
+	var wave_index := RunManager.run_state.wave_index
+	var options := CardPickStubDataRes.build_options_for_wave(
+		wave_index,
+		RunManager.run_state.master_seed
+	)
+	if _card_pick_overlay.has_method("show_pick"):
+		_card_pick_overlay.show_pick(wave_index, options)
 
 
 func _show_run_end_overlay() -> void:
@@ -205,20 +218,28 @@ func _init_pathfinding(grid: GridDataRes) -> void:
 func _apply_phase_ui(state: int) -> void:
 	var is_pause := state == RunStateEnumRes.State.PausePhase
 	var is_combat := state == RunStateEnumRes.State.CombatPhase
+	var is_card_pick := state == RunStateEnumRes.State.CardPickPhase
 	var is_run_end := state == RunStateEnumRes.State.RunEnd
 
 	_map_dim_overlay.visible = is_pause and not is_run_end
 	_pause_panel.visible = is_pause and not is_run_end
 	_combat_hud.visible = is_combat and not is_run_end
+	if _card_pick_overlay != null:
+		if not is_card_pick and _card_pick_overlay.has_method("hide_overlay"):
+			_card_pick_overlay.hide_overlay()
 	if _run_end_overlay != null:
 		if not is_run_end and _run_end_overlay.has_method("hide_overlay"):
 			_run_end_overlay.hide_overlay()
 	if _map_view.has_method("set_combat_phase"):
 		_map_view.set_combat_phase(is_combat)
+	if is_card_pick and _map_view.has_method("set_combat_phase"):
+		_map_view.set_combat_phase(false)
 	if RunManager.grid_data != null and _map_view.has_method("sync_dissatisfaction_indicators"):
 		_map_view.sync_dissatisfaction_indicators(RunManager.grid_data)
 
 	var map_width := PAUSE_VISIBLE_MAP_WIDTH if is_pause else COMBAT_VISIBLE_MAP_WIDTH
+	if is_card_pick:
+		map_width = COMBAT_VISIBLE_MAP_WIDTH
 	if _map_view.has_method("set_visible_map_size"):
 		_map_view.set_visible_map_size(Vector2(map_width, 1080.0))
 	if _input_router.has_method("set_visible_map_width"):

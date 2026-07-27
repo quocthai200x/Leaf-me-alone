@@ -94,6 +94,11 @@ func _edit_modes_allowed() -> bool:
 	return RunManager.get_state() == RunStateEnumRes.State.PausePhase
 
 
+func _map_input_allowed() -> bool:
+	var state := RunManager.get_state()
+	return state == RunStateEnumRes.State.PausePhase or state == RunStateEnumRes.State.CombatPhase
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
@@ -138,8 +143,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if _map_view == null or not _map_view.has_method("can_pan") or not _map_view.can_pan():
 		return
-	var state := RunManager.get_state()
-	if state != RunStateEnumRes.State.PausePhase and state != RunStateEnumRes.State.CombatPhase:
+	if not _map_input_allowed():
 		return
 
 	if event is InputEventMouseButton:

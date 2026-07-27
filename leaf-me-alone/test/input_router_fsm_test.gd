@@ -67,6 +67,20 @@ func test_ui_intent_ignored_during_combat() -> void:
 	assert_int(_router.get_mode()).is_equal(InteractionModeRes.Mode.IDLE)
 
 
+func test_ui_intent_ignored_during_card_pick() -> void:
+	RunManager.start_run(8080)
+	assert_bool(RunManager.begin_combat_wave()).is_true()
+	RunManager.on_combat_timer_expired()
+	assert_bool(RunManager.begin_combat_wave()).is_true()
+	RunManager.on_combat_timer_expired()
+	assert_int(RunManager.get_state()).is_equal(RunStateEnumRes.State.CardPickPhase)
+	EventBus.emit_run_event(
+		RunEventRes.Type.UI_INTENT,
+		{"intent": "select_species", "species_id": "peanut"}
+	)
+	assert_int(_router.get_mode()).is_equal(InteractionModeRes.Mode.IDLE)
+
+
 func test_combat_transition_resets_place_plant_mode() -> void:
 	RunManager.start_run(105)
 	EventBus.emit_run_event(

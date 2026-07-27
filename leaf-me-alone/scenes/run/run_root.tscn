@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://run_root_scene"]
+[gd_scene load_steps=22 format=3 uid="uid://run_root_scene"]
 
 [ext_resource type="Script" path="res://scenes/run/run_root.gd" id="1_run_root"]
 [ext_resource type="PackedScene" uid="uid://pause_panel_shell" path="res://scenes/run/pause_panel.tscn" id="2_pause"]
@@ -24,6 +24,7 @@
 [ext_resource type="Script" path="res://scripts/systems/structure_damage_system.gd" id="22_struct_dmg"]
 [ext_resource type="Script" path="res://scripts/systems/director_system.gd" id="23_director"]
 [ext_resource type="PackedScene" uid="uid://run_end_overlay" path="res://scenes/run/run_end_overlay.tscn" id="24_run_end"]
+[ext_resource type="PackedScene" uid="uid://card_pick_overlay" path="res://scenes/run/card_pick_overlay.tscn" id="25_card_pick"]
 
 [node name="RunRoot" type="Node2D"]
 script = ExtResource("1_run_root")
@@ -111,6 +112,10 @@ unique_name_in_owner = true
 visible = false
 
 [node name="RunEndOverlay" parent="UI" instance=ExtResource("24_run_end")]
+unique_name_in_owner = true
+visible = false
+
+[node name="CardPickOverlay" parent="UI" instance=ExtResource("25_card_pick")]
 unique_name_in_owner = true
 visible = false
 
