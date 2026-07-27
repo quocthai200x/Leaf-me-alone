@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://run_root_scene"]
+[gd_scene load_steps=19 format=3 uid="uid://run_root_scene"]
 
 [ext_resource type="Script" path="res://scenes/run/run_root.gd" id="1_run_root"]
 [ext_resource type="PackedScene" uid="uid://pause_panel_shell" path="res://scenes/run/pause_panel.tscn" id="2_pause"]
@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://scripts/systems/flee_feedback_system.gd" id="16_flee_feedback"]
 [ext_resource type="Script" path="res://scripts/systems/ape_pool.gd" id="17_ape_pool"]
 [ext_resource type="Script" path="res://scripts/systems/saw_ape_system.gd" id="18_saw"]
+[ext_resource type="Script" path="res://scripts/systems/hr_ape_system.gd" id="19_hr"]
 
 [node name="RunRoot" type="Node2D"]
 script = ExtResource("1_run_root")
@@ -41,6 +42,8 @@ script = ExtResource("13_dissat")
 script = ExtResource("14_flee")
 
 [node name="WhooshPlayer" type="AudioStreamPlayer" parent="FleeSequenceSystem"]
+
+[node name="HrStingPlayer" type="AudioStreamPlayer" parent="FleeSequenceSystem"]
 
 [node name="FleeFeedbackSystem" type="Node" parent="."]
 script = ExtResource("16_flee_feedback")
@@ -68,6 +71,9 @@ script = ExtResource("17_ape_pool")
 
 [node name="SawApeSystem" type="Node" parent="."]
 script = ExtResource("18_saw")
+
+[node name="HrApeSystem" type="Node" parent="."]
+script = ExtResource("19_hr")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
