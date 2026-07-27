@@ -75,7 +75,7 @@ development_status:
   epic-3-retrospective: optional
   epic-4: in-progress
   4-1-apepool-and-pathfindingservice: done
-  4-2-wavespawner-interval-bursts-and-wave-scripts: review
+  4-2-wavespawner-interval-bursts-and-wave-scripts: done
   4-3-saw-ape-worker-behavior: backlog
   4-4-hr-ape-flee-threshold-reduction: backlog
   4-5-pr-ape-billboard-dissatisfaction-aoe: backlog
