@@ -7,6 +7,7 @@ const GridDataRes := preload("res://scripts/data/grid_data.gd")
 const PlantPlacementSystemScript := preload("res://scripts/systems/plant_placement_system.gd")
 const CareSystemScript := preload("res://scripts/systems/care_system.gd")
 const StructureTypeRes := preload("res://scripts/data/structure_type.gd")
+const CardEffectApplierRes := preload("res://scripts/systems/card_effect_applier.gd")
 const ForestCoreScene := preload("res://scenes/entities/structures/forest_core.tscn")
 const RootNestScene := preload("res://scenes/entities/structures/root_nest.tscn")
 
@@ -150,6 +151,15 @@ func try_care_at_screen(screen_pos: Vector2, care_type: String) -> bool:
 	if care_type == "fertilize":
 		return care.try_fertilize(cell)
 	return care.try_water(cell)
+
+
+func try_terraform_at_screen(screen_pos: Vector2) -> bool:
+	var card_id := RunManager.run_state.pending_soil_card_id
+	if card_id.is_empty():
+		return false
+	var cell := screen_to_grid(screen_pos)
+	var wave_index := RunManager.run_state.wave_index
+	return CardEffectApplierRes.apply_soil_at_cell(card_id, cell, wave_index)
 
 
 func play_care_juice(cell: Vector2i) -> void:

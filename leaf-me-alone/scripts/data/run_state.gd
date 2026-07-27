@@ -15,6 +15,7 @@ const SoilTypeRes := preload("res://scripts/data/soil_type.gd")
 
 var map_rng: RandomNumberGenerator
 var stat_buffs: Dictionary = {}
+var pending_soil_card_id: String = ""
 
 
 func init_from_seed(seed_value: int) -> void:
@@ -26,6 +27,7 @@ func init_from_seed(seed_value: int) -> void:
 	loss_reason = ""
 	director_defeated = false
 	card_picks_count = 0
+	pending_soil_card_id = ""
 	_reset_stat_buffs()
 	map_rng = RandomNumberGenerator.new()
 	map_rng.seed = master_seed

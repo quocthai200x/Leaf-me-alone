@@ -9,6 +9,7 @@ const CardEffectApplierRes := preload("res://scripts/systems/card_effect_applier
 const CARD_MAX_WIDTH := 320.0
 const CARD_MIN_WIDTH := 240.0
 const FLIP_DURATION_SEC := 0.15
+const SOIL_ACCENT := Color("#A29BFE")
 
 @onready var _heading: Label = %HeadingLabel
 @onready var _subtitle: Label = %SubtitleLabel
@@ -17,6 +18,7 @@ const FLIP_DURATION_SEC := 0.15
 var _wave_index: int = 0
 var _committed: bool = false
 var _card_buttons: Array[PanelContainer] = []
+var _pending_soil_card_id: String = ""
 
 
 func _ready() -> void:
@@ -28,17 +30,32 @@ func _ready() -> void:
 func show_pick(wave_index: int, options: Array) -> void:
 	_wave_index = wave_index
 	_committed = false
+	_pending_soil_card_id = ""
+	mouse_filter = Control.MOUSE_FILTER_STOP
 	if _heading != null:
 		_heading.text = "Choose Your Upgrade"
 	if _subtitle != null:
 		_subtitle.text = "After Wave %d — pick 1 of 3 cards" % wave_index
+	if _cards_row != null:
+		_cards_row.visible = true
 	_rebuild_cards(options)
 	visible = true
 
 
 func hide_overlay() -> void:
 	visible = false
+	_pending_soil_card_id = ""
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	CardEffectApplierRes.cancel_pending_soil_pick()
 	_clear_cards()
+
+
+func is_targeting_soil() -> bool:
+	return not _pending_soil_card_id.is_empty()
+
+
+func get_pending_soil_card_id() -> String:
+	return _pending_soil_card_id
 
 
 func _rebuild_cards(options: Array) -> void:
@@ -141,12 +158,37 @@ func _commit_pick(option: Dictionary, card_root: PanelContainer, accent: ColorRe
 		detail.visible = true
 	var card_id := str(option.get("id", ""))
 	var card_type := str(option.get("type", ""))
+	if card_type == "soil":
+		if accent != null:
+			_play_soil_select_juice(card_root, accent)
+		if not CardEffectApplierRes.begin_soil_pick(card_id):
+			_committed = false
+			return
+		_pending_soil_card_id = card_id
+		_enter_soil_targeting(card_id)
+		return
 	if card_type == "stat" and accent != null:
 		_play_select_juice(card_root, accent)
 	CardEffectApplierRes.apply(card_id, _wave_index)
 	await get_tree().create_timer(FLIP_DURATION_SEC).timeout
 	RunManager.complete_card_pick()
 	hide_overlay()
+
+
+func _enter_soil_targeting(card_id: String) -> void:
+	if _cards_row != null:
+		_cards_row.visible = false
+	if _heading != null:
+		_heading.text = "Terraform Tile"
+	if _subtitle != null:
+		_subtitle.text = "Click one map tile — %s" % card_id
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+
+func _play_soil_select_juice(card_root: PanelContainer, accent: ColorRect) -> void:
+	_play_select_juice(card_root, accent)
+	if accent != null:
+		accent.color = SOIL_ACCENT
 
 
 func _play_select_juice(card_root: PanelContainer, accent: ColorRect) -> void:

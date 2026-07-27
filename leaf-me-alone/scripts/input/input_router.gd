@@ -4,6 +4,7 @@ extends Node
 ## Events listened: UI_INTENT, STATE_CHANGED
 
 const InteractionModeRes := preload("res://scripts/input/interaction_mode.gd")
+const CardEffectApplierRes := preload("res://scripts/systems/card_effect_applier.gd")
 const RunEventRes := preload("res://scripts/data/run_event.gd")
 const RunStateEnumRes := preload("res://scripts/data/run_state_enum.gd")
 
@@ -99,7 +100,23 @@ func _map_input_allowed() -> bool:
 	return state == RunStateEnumRes.State.PausePhase or state == RunStateEnumRes.State.CombatPhase
 
 
+func _soil_targeting_active() -> bool:
+	if RunManager.get_state() != RunStateEnumRes.State.CardPickPhase:
+		return false
+	return not RunManager.run_state.pending_soil_card_id.is_empty()
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	if _soil_targeting_active():
+		if _map_view != null and event is InputEventMouseButton:
+			var mb := event as InputEventMouseButton
+			if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and _is_over_map(mb.position):
+				if _map_view.has_method("try_terraform_at_screen"):
+					_map_view.try_terraform_at_screen(mb.position)
+				get_viewport().set_input_as_handled()
+				return
+		return
+
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.pressed and mb.button_index == MOUSE_BUTTON_RIGHT:

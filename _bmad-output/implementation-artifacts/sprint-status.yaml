@@ -93,7 +93,7 @@ development_status:
   epic-6: in-progress
   6-1-card-pick-trigger-and-overlay-ui: done
   6-2-stat-cards-via-cardeffectapplier: done
-  6-3-soil-terraform-card-single-tile: backlog
+  6-3-soil-terraform-card-single-tile: done
   6-4-cardpickphase-state-integration: backlog
   epic-6-retrospective: optional
   epic-7: backlog

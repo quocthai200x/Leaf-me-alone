@@ -135,6 +135,20 @@ func set_cell_soil(pos: Vector2i, soil: int) -> bool:
 	return true
 
 
+func can_terraform_cell(pos: Vector2i) -> bool:
+	if not is_in_bounds(pos):
+		return false
+	if has_structure_at(pos):
+		return false
+	return true
+
+
+func terraform_cell(pos: Vector2i, soil: int) -> bool:
+	if not can_terraform_cell(pos):
+		return false
+	return set_cell_soil(pos, soil)
+
+
 func get_soil_type(pos: Vector2i) -> int:
 	if not is_in_bounds(pos):
 		return SoilTypeRes.Type.ROCK

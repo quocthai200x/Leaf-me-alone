@@ -211,6 +211,24 @@ func _check_flee_thresholds() -> void:
 				trigger_flee(cell)
 
 
+func recalculate_for_terraform(cell: Vector2i) -> void:
+	var grid := RunManager.grid_data
+	if grid == null or not grid.is_in_bounds(cell) or not grid.has_plant(cell):
+		_emit_dissatisfaction_updated()
+		return
+	var species := ContentRegistry.get_species(grid.get_plant_species_id(cell))
+	if species == null:
+		_emit_dissatisfaction_updated()
+		return
+	if not DissatisfactionCauseLogicRes.has_soil_mismatch(grid, cell, species):
+		grid.adjust_plant_dissatisfaction(
+			cell,
+			-GameConstantsRes.DISSATISFACTION_SOIL_MISMATCH_DELTA
+		)
+	_emit_dissatisfaction_updated()
+	_check_flee_thresholds()
+
+
 func _scaled_diss_delta(cell: Vector2i, delta: int) -> int:
 	if delta <= 0:
 		return delta

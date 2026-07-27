@@ -105,6 +105,24 @@ func _on_run_event(event: int, payload: Variant) -> void:
 			_map_view.sync_dissatisfaction_indicators(RunManager.grid_data)
 		return
 
+	if event == RunEventRes.Type.CARD_PICKED:
+		var pick_data: Dictionary = payload
+		if str(pick_data.get("card_type", "")) == "soil":
+			var cell: Vector2i = pick_data.get("cell", Vector2i(-1, -1))
+			if RunManager.grid_data != null and _map_view.has_method("sync_from_grid_data"):
+				_map_view.sync_from_grid_data(RunManager.grid_data)
+			if cell.x >= 0 and _pathfinding_service != null:
+				if _pathfinding_service.has_method("update_cell"):
+					_pathfinding_service.update_cell(cell)
+			if _dissatisfaction_system != null and _dissatisfaction_system.has_method(
+				"recalculate_for_terraform"
+			):
+				_dissatisfaction_system.recalculate_for_terraform(cell)
+			RunManager.complete_card_pick()
+			if _card_pick_overlay != null and _card_pick_overlay.has_method("hide_overlay"):
+				_card_pick_overlay.hide_overlay()
+		return
+
 	if event == RunEventRes.Type.APE_SPAWNED:
 		var spawn_data: Dictionary = payload
 		if int(spawn_data.get("wave", 0)) == 1 and int(spawn_data.get("index", 0)) >= 2:
