@@ -11,6 +11,7 @@ const SoilTypeRes := preload("res://scripts/data/soil_type.gd")
 @export var defense: int = 0
 @export var abilities: Dictionary = {}
 @export var preferred_soil: int = SoilTypeRes.Type.RED
+@export var clan_id: String = "red_soil"
 @export var weather_preference: String = "tropical_sun"
 @export var dissatisfaction_sensitive: bool = false
 
@@ -29,6 +30,8 @@ static func from_dict(data: Dictionary) -> SpeciesDef:
 		def.abilities = (data["abilities"] as Dictionary).duplicate(true)
 	if data.has("preferred_soil"):
 		def.preferred_soil = int(data["preferred_soil"])
+	if data.has("clan_id"):
+		def.clan_id = str(data["clan_id"])
 	if data.has("weather_preference"):
 		def.weather_preference = str(data["weather_preference"])
 	if data.has("dissatisfaction_sensitive"):

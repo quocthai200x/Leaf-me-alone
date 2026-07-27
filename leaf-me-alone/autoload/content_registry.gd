@@ -2,11 +2,13 @@ extends Node
 
 const EconomyDefScript := preload("res://scripts/data/economy_def.gd")
 const CardDefScript := preload("res://scripts/data/card_def.gd")
+const ClanDefScript := preload("res://scripts/data/clan_def.gd")
 
 const SPECIES_DIR := "res://data/species/"
 const APES_DIR := "res://data/apes/"
 const CARDS_DIR := "res://data/cards/"
 const ECONOMY_PATH := "res://data/economy.json"
+const CLANS_PATH := "res://data/clans.json"
 const FALLBACK_SPECIES_PATH := "res://data/fallback/species.json"
 const FALLBACK_APES_PATH := "res://data/fallback/apes.json"
 const FALLBACK_ECONOMY_PATH := "res://data/fallback/economy.json"
@@ -16,6 +18,7 @@ const MIN_APES := 2
 var _species: Dictionary = {}
 var _apes: Dictionary = {}
 var _cards: Dictionary = {}
+var _clans: Dictionary = {}
 var _economy: EconomyDef = null
 var _loaded: bool = false
 
@@ -24,8 +27,8 @@ func _ready() -> void:
 	var ok := load_all()
 	if ok:
 		print(
-			"[ContentRegistry] Boot load OK — %d species, %d apes, %d cards, economy loaded"
-			% [_species.size(), _apes.size(), _cards.size()]
+			"[ContentRegistry] Boot load OK — %d species, %d apes, %d cards, %d clans, economy loaded"
+			% [_species.size(), _apes.size(), _cards.size(), _clans.size()]
 		)
 	else:
 		push_error("[ContentRegistry] Boot load failed — critical content missing")
@@ -35,17 +38,20 @@ func load_all() -> bool:
 	_species.clear()
 	_apes.clear()
 	_cards.clear()
+	_clans.clear()
 	_economy = null
 	_loaded = false
 
 	var species_ok := _load_species()
 	var apes_ok := _load_apes()
 	var cards_ok := _load_cards()
+	var clans_ok := _load_clans()
 	var economy_ok := _load_economy()
-	if not (species_ok and apes_ok and cards_ok and economy_ok):
+	if not (species_ok and apes_ok and cards_ok and clans_ok and economy_ok):
 		_species.clear()
 		_apes.clear()
 		_cards.clear()
+		_clans.clear()
 		_economy = null
 		_loaded = false
 		return false
@@ -91,6 +97,21 @@ func get_all_species_ids() -> Array[String]:
 func get_all_ape_ids() -> Array[String]:
 	var ids: Array[String] = []
 	for key in _apes.keys():
+		ids.append(key)
+	ids.sort()
+	return ids
+
+
+func get_clan(clan_id: String):
+	if not _clans.has(clan_id):
+		push_warning("[ContentRegistry] Unknown clan id: %s" % clan_id)
+		return null
+	return (_clans[clan_id] as ClanDefScript).duplicate(true)
+
+
+func get_all_clan_ids() -> Array[String]:
+	var ids: Array[String] = []
+	for key in _clans.keys():
 		ids.append(key)
 	ids.sort()
 	return ids
@@ -174,6 +195,30 @@ func _store_card_entries(entries: Array) -> bool:
 	if loaded == 0:
 		push_error("[ContentRegistry] No valid cards loaded")
 		_cards.clear()
+		return false
+	return true
+
+
+func _load_clans() -> bool:
+	var data: Variant = _parse_json_file(CLANS_PATH)
+	if typeof(data) != TYPE_DICTIONARY:
+		push_error("[ContentRegistry] Failed to load clans from %s" % CLANS_PATH)
+		return false
+	var entries: Array = data.get("clans", [])
+	if entries.is_empty():
+		push_error("[ContentRegistry] No clans defined")
+		return false
+	for entry in entries:
+		if typeof(entry) != TYPE_DICTIONARY:
+			continue
+		var def = ClanDefScript.from_dict(entry)
+		if def == null:
+			continue
+		if _clans.has(def.id):
+			push_error("[ContentRegistry] Duplicate clan id: %s" % def.id)
+			continue
+		_clans[def.id] = def
+	if _clans.is_empty():
 		return false
 	return true
 

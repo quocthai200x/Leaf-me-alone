@@ -105,6 +105,8 @@ func _build_catalog() -> void:
 		var species := ContentRegistry.get_species(species_id)
 		if species == null:
 			continue
+		if not SaveManager.is_clan_unlocked(species.clan_id):
+			continue
 		var btn := Button.new()
 		btn.custom_minimum_size = Vector2(88, 88)
 		btn.text = "%s\nÐ%d\n%s" % [

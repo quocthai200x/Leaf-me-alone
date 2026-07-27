@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://mainmenu001"]
+[gd_scene load_steps=3 format=3 uid="uid://mainmenu001"]
 
 [ext_resource type="Script" path="res://scenes/main/main_menu.gd" id="1_menu"]
+[ext_resource type="PackedScene" uid="uid://carbon_shop_stub" path="res://scenes/main/carbon_shop.tscn" id="2_shop"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -65,6 +66,13 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "PLAY"
 
+[node name="ShopButton" type="Button" parent="MenuColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Carbon Shop"
+
 [node name="QuitButton" type="Button" parent="MenuColumn"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
@@ -114,3 +122,7 @@ theme_override_font_sizes/font_size = 20
 text = "Generating island… HR not included."
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="CarbonShop" parent="." instance=ExtResource("2_shop")]
+unique_name_in_owner = true
+layout_mode = 1

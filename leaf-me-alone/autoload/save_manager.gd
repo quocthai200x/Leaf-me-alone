@@ -54,6 +54,26 @@ func unlock_clan(clan_id: String) -> void:
 	meta_changed.emit()
 
 
+func try_purchase_clan(clan_id: String, cost: int) -> bool:
+	if clan_id.is_empty() or is_clan_unlocked(clan_id):
+		return false
+	if cost < 0:
+		return false
+	if get_carbon_credit() < cost:
+		return false
+	_meta["carbon_credit"] = get_carbon_credit() - cost
+	var clans := get_unlocked_clans()
+	clans.append(clan_id)
+	_meta["unlocked_clans"] = clans
+	save_meta()
+	meta_changed.emit()
+	return true
+
+
+func get_clan_shortfall(cost: int) -> int:
+	return maxi(0, cost - get_carbon_credit())
+
+
 func get_settings() -> Dictionary:
 	var settings: Variant = _meta.get("settings", {})
 	if settings is Dictionary:

@@ -1,0 +1,16 @@
+{
+  "clans": [
+    {
+      "id": "red_soil",
+      "display_name": "Red Soil",
+      "unlock_cost": 0,
+      "description": "Peanut, Cashew, Teak — slice roster."
+    },
+    {
+      "id": "sand",
+      "display_name": "Sand Clan",
+      "unlock_cost": 200,
+      "description": "Desert specialists — post-slice expansion stub."
+    }
+  ]
+}

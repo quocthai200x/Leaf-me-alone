@@ -17,6 +17,8 @@ func can_preview_place(cell: Vector2i, species_id: String) -> bool:
 	var species := ContentRegistry.get_species(species_id)
 	if species == null:
 		return false
+	if not SaveManager.is_clan_unlocked(species.clan_id):
+		return false
 	var economy := _get_economy()
 	if economy == null or economy.get_balance() < species.plant_cost:
 		return false
@@ -31,6 +33,8 @@ func try_place_plant(cell: Vector2i, species_id: String) -> bool:
 		return false
 	var species := ContentRegistry.get_species(species_id)
 	if species == null:
+		return false
+	if not SaveManager.is_clan_unlocked(species.clan_id):
 		return false
 	var economy := _get_economy()
 	if economy == null or not economy.try_spend(species.plant_cost):

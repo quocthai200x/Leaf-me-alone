@@ -9,7 +9,9 @@ const LOADING_BIOME_TEXT := "Tropical — Red Soil"
 const LOADING_QUIP_TEXT := "Generating island… HR not included."
 
 @onready var _play_button: Button = %PlayButton
+@onready var _shop_button: Button = %ShopButton
 @onready var _quit_button: Button = %QuitButton
+@onready var _carbon_shop: Control = %CarbonShop
 @onready var _status_label: Label = %StatusLabel
 @onready var _loading_overlay: ColorRect = %LoadingOverlay
 @onready var _loading_biome_label: Label = %LoadingBiomeLabel
@@ -23,6 +25,7 @@ func _ready() -> void:
 	$MenuColumn/TitleLabel.text = tr("Leaf Me Alone")
 	$MenuColumn/TaglineLabel.text = tr("Who's righteous? No one — only the strong survive.")
 	_play_button.pressed.connect(_on_play_pressed)
+	_shop_button.pressed.connect(_on_shop_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
 	_loading_overlay.visible = false
 	_update_boot_status()
@@ -69,6 +72,11 @@ func _on_play_pressed() -> void:
 		return
 
 	get_tree().change_scene_to_file(RUN_ROOT_SCENE)
+
+
+func _on_shop_pressed() -> void:
+	if _carbon_shop != null and _carbon_shop.has_method("open_shop"):
+		_carbon_shop.open_shop()
 
 
 func _on_quit_pressed() -> void:
