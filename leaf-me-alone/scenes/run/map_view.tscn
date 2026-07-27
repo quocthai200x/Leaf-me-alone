@@ -5,3 +5,5 @@
 [node name="MapView" type="Node2D"]
 position = Vector2(80, 120)
 script = ExtResource("1_map")
+
+[node name="Entities" type="Node2D" parent="."]

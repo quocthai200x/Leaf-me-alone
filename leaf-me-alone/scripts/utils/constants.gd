@@ -7,6 +7,11 @@ const DEBUG_WAVE_DURATIONS_SEC: Array[float] = [3.0, 3.6, 4.2, 4.8, 6.0]
 
 const MAX_COMBAT_WAVES := 5
 
+# Ape pooling & display (Story 4.1)
+const APE_POOL_SIZE := 35
+const APE_TILE_SIZE := 16
+const APE_DISPLAY_SCALE := 3.0
+
 # Dissatisfaction tease (Story 2.9) — flee logic deferred to Epic 3
 const DISSATISFACTION_TEASE_THRESHOLD := 50
 const DISSATISFACTION_METER_THRESHOLD := 50
@@ -44,6 +49,11 @@ const DISSATISFACTION_COLOR := Color(1.0, 0.54902, 0.258824, 0.95)
 
 const DEFAULT_RUN_WEATHER := "tropical_sun"
 const WEATHER_OPTIONS: Array[String] = ["tropical_sun", "tropical_rain"]
+
+
+static func grid_cell_to_local(cell: Vector2i) -> Vector2:
+	var tile_px := float(APE_TILE_SIZE) * APE_DISPLAY_SCALE
+	return Vector2((cell.x + 0.5) * tile_px, (cell.y + 0.5) * tile_px)
 
 
 static func get_wave_duration_sec(wave_number: int) -> float:
