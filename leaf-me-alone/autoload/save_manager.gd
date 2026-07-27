@@ -9,12 +9,14 @@ signal meta_changed
 const META_SAVE_PATH := "user://save/meta.json"
 const SAVE_VERSION := 1
 const DEFAULT_CLAN_ID := "red_soil"
+const SettingsLogicRes := preload("res://scripts/utils/settings_logic.gd")
 
 var _meta: Dictionary = {}
 
 
 func _ready() -> void:
 	_meta = _load_or_default()
+	SettingsLogicRes.apply_audio_settings(get_settings())
 
 
 func get_carbon_credit() -> int:
@@ -89,6 +91,8 @@ func set_setting(key: String, value: Variant) -> void:
 	_meta["settings"] = settings
 	save_meta()
 	meta_changed.emit()
+	if key == "master_volume" or key == "sfx_volume":
+		SettingsLogicRes.apply_audio_settings(get_settings())
 
 
 func save_meta() -> bool:

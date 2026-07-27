@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-07-26T16:01:00+07:00
-last_updated: 2026-07-27T23:45:00+07:00
+last_updated: 2026-07-27T23:59:00+07:00
 project: snake-rougelike
 project_key: NOKEY
 tracking_system: file-system
@@ -96,10 +96,10 @@ development_status:
   6-3-soil-terraform-card-single-tile: done
   6-4-cardpickphase-state-integration: done
   epic-6-retrospective: optional
-  epic-7: in-progress
+  epic-7: done
   7-1-savemanager-and-local-meta-persistence: done
   7-2-carbon-credit-grant-on-run-end: done
   7-3-carbon-shop-stub-and-clan-unlock: done
   7-4-main-menu-hub-completion: done
-  7-5-settings-and-achievements-stubs: backlog
+  7-5-settings-and-achievements-stubs: done
   epic-7-retrospective: optional

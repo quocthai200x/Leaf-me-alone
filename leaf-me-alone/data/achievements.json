@@ -1,0 +1,24 @@
+{
+  "achievements": [
+    {
+      "id": "mass_quit",
+      "title": "Mass Quit",
+      "description": "Five plants flee in a single wave."
+    },
+    {
+      "id": "hr_unemployment",
+      "title": "HR Unemployment",
+      "description": "Defeat ten HR apes across your career."
+    },
+    {
+      "id": "carbon_neutral",
+      "title": "Carbon Neutral",
+      "description": "Win a run without losing a Root Nest."
+    },
+    {
+      "id": "director_review",
+      "title": "Survived Performance Review",
+      "description": "Defeat the wave-5 Director."
+    }
+  ]
+}
